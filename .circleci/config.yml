@@ -91,7 +91,6 @@ jobs:
       project:
         description: The sub-project to work on.
         type: string
-    working_directory: ./<< parameters.project >>
     steps:
       - attach_workspace:
           at: /tmp/workspace
@@ -126,6 +125,8 @@ jobs:
             cat ${BASH_ENV}
       - docker/build:
           step-name: Build application docker image
+          docker-context: ./<< parameters.project >>
+          path: ./<< parameters.project >>
           image: ${CIRCLE_PROJECT_REPONAME}
           registry: ${DOCKER_REGISTRY}
           tag: ${DOCKER_TAGS}
@@ -137,11 +138,11 @@ jobs:
           tag: ${DOCKER_TAGS}
       - run:
           name: Save docker image
-          command: docker save -o image.tar ${DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}:${PRIMARY_DOCKER_TAG}
+          command: docker save -o << parameters.project >>-image.tar ${DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}:${PRIMARY_DOCKER_TAG}
       - persist_to_workspace:
           root: ./
           paths:
-            - image.tar*
+            - << parameters.project >>-image.tar*
 
   release:
     resource_class: small
