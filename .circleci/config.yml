@@ -84,6 +84,11 @@ jobs:
 
   build-docker:
     executor: docker/machine
+    parameters:
+      project:
+        description: The sub-project to work on.
+        type: string
+    working_directory: ./<< parameters.project >>
     steps:
       - attach_workspace:
           at: /tmp/workspace
@@ -176,11 +181,15 @@ jobs:
 
   deploy:
     parameters:
+      project:
+        description: The sub-project to work on.
+        type: string
       env:
         description: Which environment to deploy
         type: enum
         default: "wip"
         enum: ["wip", "prod"]
+    working_directory: ./<< parameters.project >>
     machine:
       enabled: true
     steps:
@@ -205,6 +214,11 @@ jobs:
 
   integration-test:
     executor: docker/machine
+    parameters:
+      project:
+        description: The sub-project to work on.
+        type: string
+    working_directory: ./<< parameters.project >>
     steps:
       - attach_workspace:
           at: /tmp/workspace
@@ -249,8 +263,18 @@ workflows:
           prerelease: true
       - unit-test:
           context: default
+          matrix:
+            parameters:
+              project: []
+      - sonar-scan:
+          context: default
+          requires:
+            - unit-test
       - build-docker:
           context: default
+          matrix:
+            parameters:
+              project: []
           requires:
             - unit-test
             - pre-release
@@ -267,12 +291,18 @@ workflows:
           context: default
           name: deploy-wip
           env: wip
+          matrix:
+            parameters:
+              project: []
           requires:
             - build-docker
       - deploy:
           context: default
           name: deploy-prod
           env: prod
+          matrix:
+            parameters:
+              project: []
           requires:
             - build-docker
           filters:
@@ -281,6 +311,9 @@ workflows:
                 - main
       - integration-test:
           context: default
+          matrix:
+            parameters:
+              project: []
           requires:
             - build-docker
           filters:
