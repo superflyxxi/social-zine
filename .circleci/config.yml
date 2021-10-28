@@ -54,7 +54,7 @@ jobs:
     steps:
       - checkout
       - node/install-packages:
-          working_directory: ./<< parameters.project >>
+          app-dir: ./<< parameters.project >>
       - run:
           name: Unit Tests
           working_directory: ./<< parameters.project >>
