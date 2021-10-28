@@ -265,7 +265,7 @@ workflows:
           context: default
           matrix:
             parameters:
-              project: []
+              project: ["simple"]
       - sonar-scan:
           context: default
           requires:
@@ -274,7 +274,7 @@ workflows:
           context: default
           matrix:
             parameters:
-              project: []
+              project: ["simple"]
           requires:
             - unit-test
             - pre-release
@@ -293,7 +293,7 @@ workflows:
           env: wip
           matrix:
             parameters:
-              project: []
+              project: ["simple"]
           requires:
             - build-docker
       - deploy:
@@ -302,7 +302,7 @@ workflows:
           env: prod
           matrix:
             parameters:
-              project: []
+              project: ["simple"]
           requires:
             - build-docker
           filters:
@@ -313,7 +313,7 @@ workflows:
           context: default
           matrix:
             parameters:
-              project: []
+              project: ["simple"]
           requires:
             - build-docker
           filters:
