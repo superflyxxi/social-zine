@@ -1,0 +1,21 @@
+version: 2
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/template"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "fix(template): "
+      prefix-development: "fix(template): "
+    reviewers:
+      - superflyxxi
+  - package-ecosystem: "docker"
+    directory: "/template"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "fix(template): "
+      prefix-development: "fix(template): "
+    reviewers:
+      - superflyxxi
