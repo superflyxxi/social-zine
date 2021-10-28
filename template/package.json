@@ -1,6 +1,6 @@
 {
-  "name": "simple",
-  "description": "Simple RESTful tools",
+  "name": "template",
+  "description": "Template RESTful tools",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
@@ -10,7 +10,7 @@
     "xo-fix": "xo --fix",
     "xo-verify": "xo"
   },
-  "author": "SuperFlyXXI",
+  "author": "SuperFlyXXI <superflyxxi@yahoo.com>",
   "license": "Apache-2.0",
   "dependencies": {
     "axios": "^0.21.2",
