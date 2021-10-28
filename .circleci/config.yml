@@ -64,6 +64,7 @@ jobs:
             MOCHA_ARGS: --forbid-pending --forbid-only --reporter mocha-junit-reporter
       - run:
           name: Tar coverage
+          working_directory: ./<< parameters.project >>
           command: tar -jvcf coverage.tar.bz2 coverage/
       - store_test_results:
           path: ./mocha
@@ -73,6 +74,7 @@ jobs:
           path: ./coverage.tar.bz2
       - run:
           name: Verify XO
+          working_directory: ./<< parameters.project >>
           command: npm run xo-verify
 
   sonar-scan:
