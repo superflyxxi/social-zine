@@ -3,7 +3,6 @@ EXPOSE 3000
 MAINTAINER SuperFlyXXI
 ENV 	NODE_ENV=production \
 	DATA_DIR=/data
-RUN mkdir ${DATA_DIR}
 WORKDIR /app
 ENTRYPOINT ["npm"]
 CMD ["start"]
