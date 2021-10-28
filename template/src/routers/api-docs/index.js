@@ -10,7 +10,7 @@ const openapispec = swaggerJsdoc({
 	swaggerDefinition: {
 		openapi: '3.0.0',
 		info: {
-			title: 'Simple',
+			title: 'Template',
 			version: server.version,
 		},
 	},

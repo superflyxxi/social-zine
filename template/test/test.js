@@ -6,7 +6,7 @@ chai.use(chaiHttp);
 chai.use(chaiAlmost(0.1));
 
 describe('End-to-end tests', () => {
-	it('Simple', (done) => {
+	it('Template', (done) => {
 		done();
 	});
 });

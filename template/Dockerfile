@@ -1,7 +1,8 @@
 FROM node:16.10.0-alpine3.11
 EXPOSE 3000
 MAINTAINER SuperFlyXXI
-ENV 	NODE_ENV=production \
+ENV \
+ 	NODE_ENV=production \
 	DATA_DIR=/data
 WORKDIR /app
 ENTRYPOINT ["npm"]
