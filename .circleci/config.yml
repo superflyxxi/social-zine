@@ -53,7 +53,7 @@ jobs:
         type: string
     steps:
       - checkout
-      - node/install-packages
+      - node/install-packages:
           working_directory: ./<< parameters.project >>
       - run:
           name: Unit Tests
