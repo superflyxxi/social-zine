@@ -47,6 +47,11 @@ jobs:
     executor: 
       name: node/default
       tag: '16.5.0'
+    parameters:
+      project:
+        description: The sub-project to work on.
+        type: string
+    working_directory: ./<< parameters.project >>
     steps:
       - checkout
       - node/install-packages
@@ -68,6 +73,13 @@ jobs:
       - run:
           name: Verify XO
           command: npm run xo-verify
+
+  sonar-scan:
+    executor: 
+      name: node/default
+      tag: '16.5.0'
+    steps:
+      - checkout
       - sonarcloud/scan
 
   build-docker:
