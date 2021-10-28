@@ -1,25 +1,17 @@
 {
-  "name": "phone-compare",
-  "description": "Phone comparision RESTful tools",
+  "name": "simple",
+  "description": "Simple RESTful tools",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "test": "DATA_DIR=$(mktemp -d) c8 mocha ${MOCHA_ARGS}",
+    "test": "c8 mocha ${MOCHA_ARGS}",
     "int-test": "mocha ${MOCHA_ARGS} int-test/",
     "xo-fix": "xo --fix",
     "xo-verify": "xo"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/superflyxxi/phone-compare.git"
-  },
   "author": "SuperFlyXXI",
   "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/superflyxxi/phone-compare/issues"
-  },
-  "homepage": "https://github.com/superflyxxi/phone-compare#readme",
   "dependencies": {
     "axios": "^0.21.2",
     "express": "^4.17.1",
