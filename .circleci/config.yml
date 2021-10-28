@@ -51,12 +51,13 @@ jobs:
       project:
         description: The sub-project to work on.
         type: string
-    working_directory: ./<< parameters.project >>
     steps:
       - checkout
       - node/install-packages
+          working_directory: ./<< parameters.project >>
       - run:
           name: Unit Tests
+          working_directory: ./<< parameters.project >>
           command: npm test
           environment:
             MOCHA_FILE: ./mocha/test-results.xml
