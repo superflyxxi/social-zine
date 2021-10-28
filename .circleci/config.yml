@@ -153,7 +153,6 @@ jobs:
     steps:
       - checkout
       - run: npm ci
-      - run: npm install -D @semantic-release/exec
       - attach_workspace:
           at: /tmp/workspace
       - when:
