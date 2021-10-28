@@ -1,6 +1,5 @@
 {
 	"recursive": true,
 	"exit": true,
-	"timeout": 10000,
-	"require":["test/hooks.mjs"]
+	"timeout": 10000
 }
