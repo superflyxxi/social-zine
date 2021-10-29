@@ -65,13 +65,17 @@ jobs:
       - run:
           name: Tar coverage
           working_directory: ./<< parameters.project >>
-          command: tar -jvcf coverage.tar.bz2 coverage/
+          command: tar -jvcf << parameters.project >>-coverage.tar.bz2 coverage/
       - store_test_results:
           path: ./mocha
       - store_artifacts:
           path: ./mocha/test-results.xml
       - store_artifacts:
-          path: ./coverage.tar.bz2
+          path: ./*coverage.tar*
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - *coverage.tar*
       - run:
           name: Verify XO
           working_directory: ./<< parameters.project >>
@@ -83,6 +87,8 @@ jobs:
       tag: '16.5.0'
     steps:
       - checkout
+      - attach_workspace:
+          at: .
       - sonarcloud/scan
 
   build-docker:
