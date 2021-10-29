@@ -214,7 +214,7 @@ jobs:
           name: Generate docker-compose file
           working_directory: ./<< parameters.project >>
           command: |
-            cat docker-compose-template.yml |\
+            cat docker-compose.yml |\
               sed "s#\${DOCKER_REGISTRY}#${DOCKER_REGISTRY}#g" |\
               sed "s#\${PRIMARY_DOCKER_TAG}#${PRIMARY_DOCKER_TAG}#g" |\
               sed "s#\${ENV}#<< parameters.env >>#g" \
@@ -261,7 +261,7 @@ jobs:
           name: Generate docker-compose file
           working_directory: ./<< parameters.project >>
           command: |
-            cat int-test/docker-compose-template.yml |\
+            cat int-test/docker-compose.yml |\
               sed "s#\${DOCKER_REGISTRY}#${DOCKER_REGISTRY}#g" |\
               sed "s#\${PRIMARY_DOCKER_TAG}#${PRIMARY_DOCKER_TAG}#g" \
               > docker-compose.ci-test.yml
