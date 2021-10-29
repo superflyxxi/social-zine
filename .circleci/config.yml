@@ -118,7 +118,7 @@ jobs:
           command: |
             export CACHE_FROM_IMAGES=$(grep "^FROM " Dockerfile | sed 's/FROM //g')
             if [[ "<< pipeline.git.branch >>" != "main" ]]; then
-              export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}:latest"
+              export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:latest"
             fi
 
             export DOCKER_TAGS=${PRIMARY_DOCKER_TAG}
@@ -126,7 +126,7 @@ jobs:
               for A in $(echo ${PRIMARY_DOCKER_TAG} | tr "." "\n"); do 
                 NOW="$PREV.$A"
                 export DOCKER_TAGS="${DOCKER_TAGS},${NOW:1}"
-                export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}:${NOW:1}"
+                export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:${NOW:1}"
                 PREV=$NOW
               done
               export DOCKER_TAGS="${DOCKER_TAGS},main,latest"
@@ -138,18 +138,18 @@ jobs:
           step-name: Build application docker image
           docker-context: ./<< parameters.project >>
           path: ./<< parameters.project >>
-          image: ${CIRCLE_PROJECT_REPONAME}
+          image: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
           registry: ${DOCKER_REGISTRY}
           tag: ${DOCKER_TAGS}
           cache_from: ${CACHE_FROM_IMAGES}
       - docker/push:
           step-name: Push application docker image
-          image: ${CIRCLE_PROJECT_REPONAME}
+          image: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
           registry: ${DOCKER_REGISTRY}
           tag: ${DOCKER_TAGS}
       - run:
           name: Save docker image
-          command: docker save -o << parameters.project >>-image.tar ${DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}:${PRIMARY_DOCKER_TAG}
+          command: docker save -o << parameters.project >>-image.tar ${DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:${PRIMARY_DOCKER_TAG}
       - persist_to_workspace:
           root: ./
           paths:
@@ -223,9 +223,9 @@ jobs:
       - install-ssh-dependencies
       - upload-file:
           file: << parameters.project >>/docker-compose.<< parameters.env >>.yml
-          service: << parameters.project >>
+          service: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
       - execute-remote:
-          command: ci-deploy.sh << parameters.project >>-<< parameters.env >>
+          command: ci-deploy.sh ${CIRLCE_PROJECT_REPONAME}-<< parameters.project >>-<< parameters.env >>
 
   integration-test:
     executor: docker/machine
@@ -245,16 +245,16 @@ jobs:
           step-name: Build integration testing docker image
           docker-context: ./<< parameters.project >>
           path: ./<< parameters.project >>
-          image: ${CIRCLE_PROJECT_REPONAME}
+          image: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
           registry: ${DOCKER_REGISTRY}
           tag: inttest-${PRIMARY_DOCKER_TAG}
           dockerfile: int-test/Dockerfile
-          extra_build_args: --build-arg FROM_IMAGE=${DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}:${PRIMARY_DOCKER_TAG}
+          extra_build_args: --build-arg FROM_IMAGE=${DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:${PRIMARY_DOCKER_TAG}
       - docker/check:
           registry: ${DOCKER_REGISTRY}
       - docker/push:
           step-name: Push integration testing docker image
-          image: ${CIRCLE_PROJECT_REPONAME}
+          image: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
           registry: ${DOCKER_REGISTRY}
           tag: inttest-${PRIMARY_DOCKER_TAG}
       - run:

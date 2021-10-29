@@ -1,6 +1,6 @@
 version: '3'
 
 services:
-  template-${ENV}:
+  social-zine-template-${ENV}:
     image: ${DOCKER_REGISTRY}/template:${PRIMARY_DOCKER_TAG}
     restart: always
