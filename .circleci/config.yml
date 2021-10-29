@@ -82,7 +82,9 @@ jobs:
       - run:
           name: Verify XO
           working_directory: ./<< parameters.project >>
-          command: npm run xo-verify
+          command: |
+            cp -v ../template/.xo-config.json ./
+            npm run xo-verify
 
   sonar-scan:
     executor: 
