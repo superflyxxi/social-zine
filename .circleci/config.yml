@@ -287,7 +287,7 @@ workflows:
           context: default
           matrix:
             parameters:
-              project: []
+              project: ["zine-generator"]
       - sonar-scan:
           context: default
           requires:
@@ -300,7 +300,7 @@ workflows:
           context: default
           matrix:
             parameters:
-              project: []
+              project: ["zine-generator"]
           requires:
             - validate-dockerfiles
             - unit-test
@@ -320,7 +320,7 @@ workflows:
           env: wip
           matrix:
             parameters:
-              project: []
+              project: ["zine-generator"]
           requires:
             - build-docker
       - deploy:
@@ -329,7 +329,7 @@ workflows:
           env: prod
           matrix:
             parameters:
-              project: []
+              project: ["zine-generator"]
           requires:
             - build-docker
           filters:
@@ -340,7 +340,7 @@ workflows:
           context: default
           matrix:
             parameters:
-              project: []
+              project: ["zine-generator"]
           requires:
             - build-docker
           filters:

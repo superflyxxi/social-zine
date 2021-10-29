@@ -10,6 +10,24 @@ updates:
     reviewers:
       - superflyxxi
   - package-ecosystem: "npm"
+    directory: "/zine-generator"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "fix(zine-generator): "
+      prefix-development: "fix(zine-generator): "
+    reviewers:
+      - superflyxxi
+  - package-ecosystem: "docker"
+    directory: "/zine-generator"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "fix(zine-generator): "
+      prefix-development: "fix(zine-generator): "
+    reviewers:
+      - superflyxxi
+  - package-ecosystem: "npm"
     directory: "/template"
     schedule:
       interval: "monthly"

@@ -1,0 +1,6 @@
+version: '3'
+
+services:
+  social-zine-zine-generator-${ENV}:
+    image: ${DOCKER_REGISTRY}/social-zine/zine-generator:${PRIMARY_DOCKER_TAG}
+    restart: always
