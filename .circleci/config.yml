@@ -268,6 +268,7 @@ jobs:
             cat docker-compose.ci-test.yml
       - run:
           name: Bring up
+          working_directory: ./<< parameters.project >>
           command: |
             docker-compose -f docker-compose.ci-test.yml up --abort-on-container-exit --exit-code-from << parameters.project >>-ci-test
 
