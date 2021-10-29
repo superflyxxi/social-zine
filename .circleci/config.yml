@@ -61,10 +61,12 @@ jobs:
       - run:
           name: Unit Tests
           working_directory: ./<< parameters.project >>
-          command: npm test
           environment:
             MOCHA_FILE: ./mocha/test-results.xml
             MOCHA_ARGS: --forbid-pending --forbid-only --reporter mocha-junit-reporter
+          command: |
+            cp -v ../template/.c8rc.json ../template/.mocharc.json ./
+            npm test
       - run:
           name: Tar coverage
           working_directory: ./<< parameters.project >>
