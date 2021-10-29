@@ -270,7 +270,7 @@ jobs:
           name: Bring up
           working_directory: ./<< parameters.project >>
           command: |
-            docker-compose -f docker-compose.ci-test.yml up --abort-on-container-exit --exit-code-from << parameters.project >>-ci-test
+            docker-compose -f docker-compose.ci-test.yml up --abort-on-container-exit --exit-code-from test
 
 workflows:
   default:
