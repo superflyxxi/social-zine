@@ -75,7 +75,7 @@ jobs:
       - persist_to_workspace:
           root: ./
           paths:
-            - *coverage.tar*
+            - ./*coverage.tar*
       - run:
           name: Verify XO
           working_directory: ./<< parameters.project >>
