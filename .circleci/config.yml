@@ -65,7 +65,7 @@ jobs:
       - run:
           name: Tar coverage
           working_directory: ./<< parameters.project >>
-          command: tar -jvcf << parameters.project >>-coverage.tar.bz2 coverage/
+          command: tar -vcf << parameters.project >>-coverage.tar coverage/
       - store_test_results:
           path: ./mocha
       - store_artifacts:
