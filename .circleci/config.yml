@@ -25,11 +25,14 @@ commands:
       file:
         description: the file to upload
         type: string
+      service:
+        description: The service name being deployed.
+        type: string
     steps:
       - run:
           name: Upload << parameters.file >>
           command: |
-            sshpass -e scp -P ${SSH_PORT} << parameters.file >> ${SSH_USER}@${SSH_SERVER}:${SSH_DOCKER_COMPOSE_REMOTE_DIR}/${CIRCLE_PROJECT_REPONAME}
+            sshpass -e scp -P ${SSH_PORT} << parameters.file >> ${SSH_USER}@${SSH_SERVER}:${SSH_DOCKER_COMPOSE_REMOTE_DIR}/<< parameters.service >>
   execute-remote:
     parameters:
       command:
@@ -200,7 +203,6 @@ jobs:
         type: enum
         default: "wip"
         enum: ["wip", "prod"]
-    working_directory: ./<< parameters.project >>
     machine:
       enabled: true
     steps:
@@ -210,6 +212,7 @@ jobs:
       - checkout
       - run:
           name: Generate docker-compose file
+          working_directory: ./<< parameters.project >>
           command: |
             cat docker-compose-template.yml |\
               sed "s#\${DOCKER_REGISTRY}#${DOCKER_REGISTRY}#g" |\
@@ -220,8 +223,9 @@ jobs:
       - install-ssh-dependencies
       - upload-file:
           file: docker-compose.<< parameters.env >>.yml
+          service: << parameters.project >>
       - execute-remote:
-          command: ci-deploy.sh ${CIRCLE_PROJECT_REPONAME}-<< parameters.env >>
+          command: ci-deploy.sh << parameters.project >>-<< parameters.env >>
 
   integration-test:
     executor: docker/machine
