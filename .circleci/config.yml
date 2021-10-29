@@ -288,11 +288,9 @@ workflows:
           requires:
             - unit-test
       - docker/hadolint:
-          name: validate-dockerfile
+          name: validate-dockerfiles
           context: default
-          matrix:
-            parameters:
-              dockerfiles: ["template/Dockerfile"]
+          dockerfiles: "template/Dockerfile"
       - build-docker:
           context: default
           matrix:
