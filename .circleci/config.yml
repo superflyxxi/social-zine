@@ -106,10 +106,12 @@ jobs:
       - checkout
       - run: 
           name: Determine version.txt
+          working_directory: ./<< parameters.project >>
           command: |
             cp -v /tmp/workspace/full_version.txt ./src/version.txt
       - run:
           name: Custom enviroment variables
+          working_directory: ./<< parameters.project >>
           command: |
             export CACHE_FROM_IMAGES=$(grep "^FROM " Dockerfile | sed 's/FROM //g')
             if [[ "<< pipeline.git.branch >>" != "main" ]]; then
