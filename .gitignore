@@ -4,6 +4,9 @@
 !template/.mocharc.json
 **/.xo-config.json
 !template/.xo-config.json
+**/.prettierrc.json
+!template/.prettierrc.json
+
 
 # Standard Stuff Below
 

@@ -69,8 +69,7 @@ jobs:
             npm test
       - run:
           name: Tar coverage
-          working_directory: ./<< parameters.project >>
-          command: tar -vcf << parameters.project >>-coverage.tar coverage/
+          command: tar -vcf << parameters.project >>-coverage.tar << parameters.project >>/coverage/
       - store_test_results:
           path: ./<< parameters.project >>/mocha
       - store_artifacts:
@@ -78,7 +77,7 @@ jobs:
       - store_artifacts:
           path: ./<< parameters.project >>/coverage/
       - persist_to_workspace:
-          root: ./<< parameters.project >>
+          root: ./
           paths:
             - ./*coverage.tar*
       - run:
@@ -96,6 +95,17 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
+      - run:
+          name: Untar coverage
+          command: |
+            tar -vxf ./*coverage.tar*
+      - run:
+          name: Configure sonar-project.properties
+          command: |
+            printf "sonar.sources=%s\n" $(find . -maxdepth 2 -name src -type d | xargs echo | sed 's/ /,/g') >> sonar-project.properties
+            printf "sonar.tests=%s\n" $(find . -maxdepth 2 -name test -type d | xargs echo | sed 's/ /,/g') >> sonar-project.properties
+            printf "sonar.javascript.lcov.reportPaths=%s\n" $(find . -name lcov.info -type f | xargs echo | sed 's/ /,/g') >> sonar-project.properties
+            cat sonar-project.properties
       - sonarcloud/scan
 
   build-docker:
@@ -229,7 +239,7 @@ jobs:
           file: << parameters.project >>/docker-compose.<< parameters.env >>.yml
           service: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
       - execute-remote:
-          command: ci-deploy.sh ${CIRLCE_PROJECT_REPONAME}-<< parameters.project >>-<< parameters.env >>
+          command: ci-deploy.sh ${CIRCLE_PROJECT_REPONAME}-<< parameters.project >>-<< parameters.env >>
 
   integration-test:
     executor: docker/machine
