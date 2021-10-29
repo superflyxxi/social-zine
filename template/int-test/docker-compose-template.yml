@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  template:
+    image: ${DOCKER_REGISTRY}/template:${PRIMARY_DOCKER_TAG}
+    restart: always
+    environment:
+      NODE_ENV: development
+  template-ci-test:
+    image: ${DOCKER_REGISTRY}/template:inttest-${PRIMARY_DOCKER_TAG}
+    depends_on:
+      - template
+    restart: "no"
+    environment:
+      BASE_URL: "http://template:3000"
