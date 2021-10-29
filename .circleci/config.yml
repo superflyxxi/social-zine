@@ -222,7 +222,7 @@ jobs:
             cat docker-compose.<< parameters.env >>.yml
       - install-ssh-dependencies
       - upload-file:
-          file: docker-compose.<< parameters.env >>.yml
+          file: << parameters.project >>/docker-compose.<< parameters.env >>.yml
           service: << parameters.project >>
       - execute-remote:
           command: ci-deploy.sh << parameters.project >>-<< parameters.env >>
