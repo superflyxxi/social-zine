@@ -239,7 +239,7 @@ jobs:
       - export-primary-docker-tag
       - run:
           name: Load docker image
-          command: docker load -i /tmp/workspace/image<< parameters.project >>.tar
+          command: docker load -i /tmp/workspace/<< parameters.project >>-image.tar
       - checkout
       - docker/build:
           step-name: Build integration testing docker image
