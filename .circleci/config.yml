@@ -292,7 +292,7 @@ workflows:
           context: default
           matrix:
             parameters:
-              workspace-root: ["template"]
+              dockerfiles: ["template/Dockerfile"]
       - build-docker:
           context: default
           matrix:
