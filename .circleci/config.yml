@@ -287,12 +287,19 @@ workflows:
           context: default
           requires:
             - unit-test
+      - docker/hadolint:
+          name: validate-dockerfile
+          context: default
+          matrix:
+            parameters:
+              workspace-root: ["template"]
       - build-docker:
           context: default
           matrix:
             parameters:
               project: ["template"]
           requires:
+            - validate-dockerfile
             - unit-test
             - pre-release
       - release:
