@@ -1,6 +1,6 @@
 version: '3'
 
 services:
-  phone-compare-${ENV}:
-    image: ${DOCKER_REGISTRY}/phone-compare:${PRIMARY_DOCKER_TAG}
+  template-${ENV}:
+    image: ${DOCKER_REGISTRY}/template:${PRIMARY_DOCKER_TAG}
     restart: always
