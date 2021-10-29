@@ -83,7 +83,7 @@ jobs:
           name: Verify XO
           working_directory: ./<< parameters.project >>
           command: |
-            cp -v ../template/.xo-config.json ./
+            cp -v ../template/.prettierrc.json ../template/.xo-config.json ./
             npm run xo-verify
 
   sonar-scan:
