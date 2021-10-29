@@ -2,6 +2,14 @@ version: 2
 
 updates:
   - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix-development: "fix(template): "
+    reviewers:
+      - superflyxxi
+  - package-ecosystem: "npm"
     directory: "/template"
     schedule:
       interval: "monthly"
