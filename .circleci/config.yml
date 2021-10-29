@@ -73,9 +73,9 @@ jobs:
       - store_artifacts:
           path: ./*coverage.tar*
       - persist_to_workspace:
-          root: ./
+          root: ./<< parameters.project >>
           paths:
-            - ./*coverage.tar*
+            - ./<< parameters.project >>/*coverage.tar*
       - run:
           name: Verify XO
           working_directory: ./<< parameters.project >>
