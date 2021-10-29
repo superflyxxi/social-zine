@@ -298,7 +298,7 @@ workflows:
             parameters:
               project: ["template"]
           requires:
-            - validate-dockerfile
+            - validate-dockerfiles
             - unit-test
             - pre-release
       - release:
