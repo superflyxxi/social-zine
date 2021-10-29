@@ -69,8 +69,7 @@ jobs:
             npm test
       - run:
           name: Tar coverage
-          working_directory: ./<< parameters.project >>
-          command: tar -vcf << parameters.project >>-coverage.tar coverage/
+          command: tar -vcf << parameters.project >>-coverage.tar << parameters.project >>/coverage/
       - store_test_results:
           path: ./<< parameters.project >>/mocha
       - store_artifacts:
@@ -78,7 +77,7 @@ jobs:
       - store_artifacts:
           path: ./<< parameters.project >>/coverage/
       - persist_to_workspace:
-          root: ./<< parameters.project >>
+          root: ./
           paths:
             - ./*coverage.tar*
       - run:
