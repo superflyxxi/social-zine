@@ -1,0 +1,349 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@4
+  docker: circleci/docker@1
+  sonarcloud: sonarsource/sonarcloud@1
+
+commands:
+  export-primary-docker-tag:
+    # Assuming /tmp/workspace as the files required
+    steps:
+      - run:
+          name: Determine docker tag
+          command: |
+            echo "export PRIMARY_DOCKER_TAG=$(cat /tmp/workspace/short_version.txt | sed 's#/#-#g')" >> ${BASH_ENV}
+  install-ssh-dependencies:
+    steps:
+      - run:
+          name: Install sshpass
+          command: |
+            sudo apt-get update
+            sudo apt-get install sshpass
+  upload-file:
+    parameters:
+      file:
+        description: the file to upload
+        type: string
+      service:
+        description: The service name being deployed.
+        type: string
+    steps:
+      - run:
+          name: Upload << parameters.file >>
+          command: |
+            sshpass -e scp -P ${SSH_PORT} << parameters.file >> ${SSH_USER}@${SSH_SERVER}:${SSH_DOCKER_COMPOSE_REMOTE_DIR}/<< parameters.service >>
+  execute-remote:
+    parameters:
+      command:
+        description: The command to execute
+        type: string
+    steps:
+      - run:
+          name: Execute a remote command
+          command: |
+            sshpass -e ssh ${SSH_USER}@${SSH_SERVER} -p ${SSH_PORT} "${SSH_DOCKER_COMPOSE_REMOTE_DIR}/<< parameters.command >>"
+
+jobs:
+  unit-test:
+    resource_class: small
+    executor: 
+      name: node/default
+      tag: '16.5.0'
+    parameters:
+      project:
+        description: The sub-project to work on.
+        type: string
+    steps:
+      - checkout
+      - node/install-packages:
+          app-dir: ./<< parameters.project >>
+      - run:
+          name: Unit Tests
+          working_directory: ./<< parameters.project >>
+          environment:
+            MOCHA_FILE: ./mocha/test-results.xml
+            MOCHA_ARGS: --forbid-pending --forbid-only --reporter mocha-junit-reporter
+          command: |
+            cp -v ../template/.c8rc.json ../template/.mocharc.json ./
+            npm test
+      - run:
+          name: Tar coverage
+          working_directory: ./<< parameters.project >>
+          command: tar -vcf << parameters.project >>-coverage.tar coverage/
+      - store_test_results:
+          path: ./mocha
+      - store_artifacts:
+          path: ./mocha/test-results.xml
+      - store_artifacts:
+          path: ./<< parameters.project >>/*coverage.tar*
+      - persist_to_workspace:
+          root: ./<< parameters.project >>
+          paths:
+            - ./*coverage.tar*
+      - run:
+          name: Verify XO
+          working_directory: ./<< parameters.project >>
+          command: |
+            cp -v ../template/.prettierrc.json ../template/.xo-config.json ./
+            npm run xo-verify
+
+  sonar-scan:
+    executor: 
+      name: node/default
+      tag: '16.5.0'
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - sonarcloud/scan
+
+  build-docker:
+    executor: docker/machine
+    parameters:
+      project:
+        description: The sub-project to work on.
+        type: string
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - docker/check:
+          registry: ${DOCKER_REGISTRY}
+      - export-primary-docker-tag
+      - checkout
+      - run: 
+          name: Determine version.txt
+          working_directory: ./<< parameters.project >>
+          command: |
+            cp -v /tmp/workspace/full_version.txt ./src/version.txt
+      - run:
+          name: Custom enviroment variables
+          working_directory: ./<< parameters.project >>
+          command: |
+            export CACHE_FROM_IMAGES=$(grep "^FROM " Dockerfile | sed 's/FROM //g')
+            if [[ "<< pipeline.git.branch >>" != "main" ]]; then
+              export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:latest"
+            fi
+
+            export DOCKER_TAGS=${PRIMARY_DOCKER_TAG}
+            if [[ "main" == "<< pipeline.git.branch >>" ]] && [[ "main" != "${PRIMARY_DOCKER_TAG}" ]]; then
+              for A in $(echo ${PRIMARY_DOCKER_TAG} | tr "." "\n"); do 
+                NOW="$PREV.$A"
+                export DOCKER_TAGS="${DOCKER_TAGS},${NOW:1}"
+                export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:${NOW:1}"
+                PREV=$NOW
+              done
+              export DOCKER_TAGS="${DOCKER_TAGS},main,latest"
+            fi
+            echo "export DOCKER_TAGS=${DOCKER_TAGS}" >> ${BASH_ENV}
+            echo "export CACHE_FROM_IMAGES=${CACHE_FROM_IMAGES}" >> ${BASH_ENV}
+            cat ${BASH_ENV}
+      - docker/build:
+          step-name: Build application docker image
+          docker-context: ./<< parameters.project >>
+          path: ./<< parameters.project >>
+          image: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
+          registry: ${DOCKER_REGISTRY}
+          tag: ${DOCKER_TAGS}
+          cache_from: ${CACHE_FROM_IMAGES}
+      - docker/push:
+          step-name: Push application docker image
+          image: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
+          registry: ${DOCKER_REGISTRY}
+          tag: ${DOCKER_TAGS}
+      - run:
+          name: Save docker image
+          command: docker save -o << parameters.project >>-image.tar ${DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:${PRIMARY_DOCKER_TAG}
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - << parameters.project >>-image.tar*
+
+  release:
+    resource_class: small
+    docker:
+      - image: circleci/node
+    parameters:
+      prerelease:
+        description: Whether it's a pre-release and not actually release.
+        type: boolean
+        default: false
+    steps:
+      - checkout
+      - run: npm ci
+      - attach_workspace:
+          at: /tmp/workspace
+      - when:
+          condition: << parameters.prerelease >>
+          steps:
+            run:
+              name: Define additional args
+              command: |
+                echo "export ADDITIONAL_ARGS=--dry-run" >> ${BASH_ENV}
+      - run:
+          name: Run semantic-release
+          command: |
+            npx semantic-release ${ADDITIONAL_ARGS}
+            if [[ "" == "$(cat version.txt)" ]]; then 
+              printf "%s-%s" ${CIRCLE_BRANCH} ${CIRCLE_SHA1:0:7} | sed 's#/#-#g' > /tmp/workspace/full_version.txt
+              printf "${CIRCLE_BRANCH}" | sed 's#/#-#g' > /tmp/workspace/short_version.txt
+            else
+              cp -v version.txt /tmp/workspace/full_version.txt
+              cp -v version.txt /tmp/workspace/short_version.txt
+            fi
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - full_version.txt
+            - short_version.txt
+
+  deploy:
+    parameters:
+      project:
+        description: The sub-project to work on.
+        type: string
+      env:
+        description: Which environment to deploy
+        type: enum
+        default: "wip"
+        enum: ["wip", "prod"]
+    machine:
+      enabled: true
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - export-primary-docker-tag
+      - checkout
+      - run:
+          name: Generate docker-compose file
+          working_directory: ./<< parameters.project >>
+          command: |
+            cat docker-compose.yml |\
+              sed "s#\${DOCKER_REGISTRY}#${DOCKER_REGISTRY}#g" |\
+              sed "s#\${PRIMARY_DOCKER_TAG}#${PRIMARY_DOCKER_TAG}#g" |\
+              sed "s#\${ENV}#<< parameters.env >>#g" \
+              > docker-compose.<< parameters.env >>.yml
+            cat docker-compose.<< parameters.env >>.yml
+      - install-ssh-dependencies
+      - upload-file:
+          file: << parameters.project >>/docker-compose.<< parameters.env >>.yml
+          service: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
+      - execute-remote:
+          command: ci-deploy.sh ${CIRLCE_PROJECT_REPONAME}-<< parameters.project >>-<< parameters.env >>
+
+  integration-test:
+    executor: docker/machine
+    parameters:
+      project:
+        description: The sub-project to work on.
+        type: string
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - export-primary-docker-tag
+      - run:
+          name: Load docker image
+          command: docker load -i /tmp/workspace/<< parameters.project >>-image.tar
+      - checkout
+      - docker/build:
+          step-name: Build integration testing docker image
+          docker-context: ./<< parameters.project >>
+          path: ./<< parameters.project >>
+          image: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
+          registry: ${DOCKER_REGISTRY}
+          tag: inttest-${PRIMARY_DOCKER_TAG}
+          dockerfile: int-test/Dockerfile
+          extra_build_args: --build-arg FROM_IMAGE=${DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:${PRIMARY_DOCKER_TAG}
+      - docker/check:
+          registry: ${DOCKER_REGISTRY}
+      - docker/push:
+          step-name: Push integration testing docker image
+          image: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
+          registry: ${DOCKER_REGISTRY}
+          tag: inttest-${PRIMARY_DOCKER_TAG}
+      - run:
+          name: Generate docker-compose file
+          working_directory: ./<< parameters.project >>
+          command: |
+            cat int-test/docker-compose.yml |\
+              sed "s#\${DOCKER_REGISTRY}#${DOCKER_REGISTRY}#g" |\
+              sed "s#\${PRIMARY_DOCKER_TAG}#${PRIMARY_DOCKER_TAG}#g" \
+              > docker-compose.ci-test.yml
+            cat docker-compose.ci-test.yml
+      - run:
+          name: Bring up
+          working_directory: ./<< parameters.project >>
+          command: |
+            docker-compose -f docker-compose.ci-test.yml up --abort-on-container-exit --exit-code-from test
+
+workflows:
+  default:
+    jobs:
+      - release:
+          name: pre-release
+          context: default
+          prerelease: true
+      - unit-test:
+          context: default
+          matrix:
+            parameters:
+              project: []
+      - sonar-scan:
+          context: default
+          requires:
+            - unit-test
+      - docker/hadolint:
+          name: validate-dockerfiles
+          context: default
+          dockerfiles: "template/Dockerfile"
+      - build-docker:
+          context: default
+          matrix:
+            parameters:
+              project: []
+          requires:
+            - validate-dockerfiles
+            - unit-test
+            - pre-release
+      - release:
+          prerelease: false
+          context: default
+          requires:
+            - build-docker
+          filters:
+            branches:
+              only:
+                - main
+      - deploy:
+          context: default
+          name: deploy-wip
+          env: wip
+          matrix:
+            parameters:
+              project: []
+          requires:
+            - build-docker
+      - deploy:
+          context: default
+          name: deploy-prod
+          env: prod
+          matrix:
+            parameters:
+              project: []
+          requires:
+            - build-docker
+          filters:
+            branches:
+              only:
+                - main
+      - integration-test:
+          context: default
+          matrix:
+            parameters:
+              project: []
+          requires:
+            - build-docker
+          filters:
+            branches:
+              ignore:
+                - main

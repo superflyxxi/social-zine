@@ -1,0 +1,6 @@
+version: '3'
+
+services:
+  social-zine-template-${ENV}:
+    image: ${DOCKER_REGISTRY}/social-zine/template:${PRIMARY_DOCKER_TAG}
+    restart: always
