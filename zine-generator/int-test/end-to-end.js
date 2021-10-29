@@ -18,7 +18,7 @@ describe('End-to-end integration tests', () => {
 			.send({
 				generator: true,
 				from: false,
-				to: false
+				to: false,
 			})
 			.end((error, res) => {
 				expect(error).to.equal(null);
