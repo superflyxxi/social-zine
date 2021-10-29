@@ -239,7 +239,7 @@ jobs:
           file: << parameters.project >>/docker-compose.<< parameters.env >>.yml
           service: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
       - execute-remote:
-          command: ci-deploy.sh ${CIRLCE_PROJECT_REPONAME}-<< parameters.project >>-<< parameters.env >>
+          command: ci-deploy.sh ${CIRCLE_PROJECT_REPONAME}-<< parameters.project >>-<< parameters.env >>
 
   integration-test:
     executor: docker/machine
