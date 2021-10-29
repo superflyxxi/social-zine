@@ -71,11 +71,11 @@ jobs:
       - store_artifacts:
           path: ./mocha/test-results.xml
       - store_artifacts:
-          path: ./*coverage.tar*
+          path: ./<< parameters.project >>/*coverage.tar*
       - persist_to_workspace:
           root: ./<< parameters.project >>
           paths:
-            - ./<< parameters.project >>/*coverage.tar*
+            - ./*coverage.tar*
       - run:
           name: Verify XO
           working_directory: ./<< parameters.project >>
