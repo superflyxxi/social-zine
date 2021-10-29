@@ -72,11 +72,11 @@ jobs:
           working_directory: ./<< parameters.project >>
           command: tar -vcf << parameters.project >>-coverage.tar coverage/
       - store_test_results:
-          path: ./mocha
+          path: ./<< parameters.project >>/mocha
       - store_artifacts:
-          path: ./mocha/test-results.xml
+          path: ./<< parameters.project >>/mocha/test-results.xml
       - store_artifacts:
-          path: ./<< parameters.project >>/*coverage.tar*
+          path: ./<< parameters.project >>/coverage/
       - persist_to_workspace:
           root: ./<< parameters.project >>
           paths:
