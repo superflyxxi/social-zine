@@ -233,17 +233,18 @@ jobs:
       project:
         description: The sub-project to work on.
         type: string
-    working_directory: ./<< parameters.project >>
     steps:
       - attach_workspace:
           at: /tmp/workspace
       - export-primary-docker-tag
       - run:
           name: Load docker image
-          command: docker load -i /tmp/workspace/image.tar
+          command: docker load -i /tmp/workspace/image<< parameters.project >>.tar
       - checkout
       - docker/build:
           step-name: Build integration testing docker image
+          docker-context: ./<< parameters.project >>
+          path: ./<< parameters.project >>
           image: ${CIRCLE_PROJECT_REPONAME}
           registry: ${DOCKER_REGISTRY}
           tag: inttest-${PRIMARY_DOCKER_TAG}
@@ -258,6 +259,7 @@ jobs:
           tag: inttest-${PRIMARY_DOCKER_TAG}
       - run:
           name: Generate docker-compose file
+          working_directory: ./<< parameters.project >>
           command: |
             cat int-test/docker-compose-template.yml |\
               sed "s#\${DOCKER_REGISTRY}#${DOCKER_REGISTRY}#g" |\
@@ -267,7 +269,7 @@ jobs:
       - run:
           name: Bring up
           command: |
-            docker-compose -f docker-compose.ci-test.yml up --abort-on-container-exit --exit-code-from ${CIRCLE_PROJECT_REPONAME}-ci-test
+            docker-compose -f docker-compose.ci-test.yml up --abort-on-container-exit --exit-code-from << parameters.project >>-ci-test
 
 workflows:
   default:
