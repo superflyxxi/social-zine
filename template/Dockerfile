@@ -1,12 +1,12 @@
 FROM node:16.10.0-alpine3.11
 EXPOSE 3000
-MAINTAINER SuperFlyXXI
+LABEL org.opencontainers.image.authors="SuperFlyXXI <superflyxxi@yahoo.com>"
 ENV \
  	NODE_ENV=production \
 	DATA_DIR=/data
 WORKDIR /app
 ENTRYPOINT ["npm"]
 CMD ["start"]
-ADD package* /app/
+COPY package* /app/
 RUN npm install
-ADD src /app/src
+COPY src /app/src
