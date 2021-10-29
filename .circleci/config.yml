@@ -95,6 +95,10 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
+      - run:
+          name: Untar coverage
+          command: |
+            tar -vxf ./*coverage.tar*
       - sonarcloud/scan
 
   build-docker:
