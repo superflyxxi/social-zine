@@ -14,7 +14,7 @@ const openapispec = swaggerJsdoc({
 			version: server.version,
 		},
 	},
-	apis: ['./src/routers/**/*.js', './src/error-handler/*.js'],
+	apis: ['./src/routers/**/*.js'],
 });
 
 router.get('/json', (req, res) => res.send(openapispec));
