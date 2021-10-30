@@ -28,5 +28,4 @@ class RootError extends Error {
 		this.detail = detail;
 	}
 }
-
-export default {errorHandler, RootError}
+export default {errorHandler, RootError};
