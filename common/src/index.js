@@ -35,4 +35,10 @@ class NotFoundError extends RootError {
 	}
 }
 
-export default {errorHandler, RootError, NotFoundError};
+class RouteNotFoundError extends NotFoundError {
+	constructor(req) {
+		super(`${req.method} ${req.path} not a valid API.`);
+	}
+}
+
+export default {errorHandler, RootError, NotFoundError, RouteNotFoundError};
