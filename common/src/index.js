@@ -41,4 +41,4 @@ export class RouteNotFoundError extends NotFoundError {
 	}
 }
 
-//export default {errorHandler, RootError, NotFoundError, RouteNotFoundError};
+// Export default {errorHandler, RootError, NotFoundError, RouteNotFoundError};

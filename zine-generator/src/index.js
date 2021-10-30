@@ -1,8 +1,8 @@
 import express from 'express';
 import morgan from 'morgan';
+import {RouteNotFoundError, errorHandler} from '@superflyxxi/common';
 import apiDocsRouter from './routers/api-docs/index.js';
 import {server} from './config/index.js';
-import {RouteNotFoundError, errorHandler} from '@superflyxxi/common';
 
 const app = express();
 app.use(express.json());
