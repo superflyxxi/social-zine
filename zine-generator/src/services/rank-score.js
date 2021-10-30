@@ -2,15 +2,12 @@ import process from 'node:process';
 import axios from 'axios';
 import lodash from 'lodash';
 import {server, rankRules} from '../config/index.js';
-import validation from '../helpers/validation.js';
 import * as versions from '../helpers/versions.js';
 import cache from '../helpers/cache.js';
 
 const PHONE_BASE_URL = process.env.PHONE_BASE_URL ?? 'http://localhost:' + server.port;
 
 export default async function compare(req, res) {
-	validate(req.body);
-
 	const ranking = req.body.ranking;
 	const itemScoreList = await getPhoneScoreList(req.body.items);
 	const rankScale = await generateScoreScale(ranking, itemScoreList);
@@ -30,34 +27,6 @@ async function scoreAndSortPhones(itemScoreList, rankScale) {
 	await Promise.all(promises);
 
 	itemScoreList.sort((alpha, beta) => beta.score - alpha.score);
-}
-
-function validate(body) {
-	validation(body, {
-		items: {presence: false, type: 'array'},
-		ranking: {presence: true, type: 'array'},
-	});
-	if (body.items) {
-		for (const item of body.items) {
-			validation(item, {
-				manufacturer: {presence: true, type: 'string'},
-				model: {presence: true, type: 'string'},
-			});
-		}
-	}
-
-	for (const item of body.ranking) {
-		validation(
-			{item},
-			{
-				item: {
-					presence: true,
-					type: 'string',
-					inclusion: Object.keys(rankRules),
-				},
-			},
-		);
-	}
 }
 
 async function getPhoneScoreList(items) {
