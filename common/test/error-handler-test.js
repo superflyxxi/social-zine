@@ -91,4 +91,24 @@ describe('Error-handler', () => {
 			detail: 'RootDetail',
 		});
 	});
+
+	it('NotFoundError', () => {
+		let message;
+		const res = {
+			status: () => {
+				return {
+					send: (input) => {
+						message = input;
+					},
+				};
+			},
+		};
+		library.errorHandler(new library.NotFoundError('Not Found Detail'), undefined, res, () => true);
+		expect(message).to.deep.include({
+			type: '/errors/NOT_FOUND',
+			title: 'Not Found',
+			status: 404,
+			detail: 'Not Found Detail',
+		});
+	});
 });

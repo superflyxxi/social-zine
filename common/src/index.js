@@ -28,4 +28,11 @@ class RootError extends Error {
 		this.detail = detail;
 	}
 }
-export default {errorHandler, RootError};
+
+class NotFoundError extends RootError {
+	constructor(detail) {
+		super('/errors/NOT_FOUND', 'Not Found', 404, detail);
+	}
+}
+
+export default {errorHandler, RootError, NotFoundError};
