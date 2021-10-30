@@ -2,10 +2,12 @@ import process from 'node:process';
 import axios from 'axios';
 import lodash from 'lodash';
 import * as versions from '../helpers/versions.js';
-import cache from '../helpers/cache.js';
 
 export default async function rank(rankRules, ranking, items) {
-	const itemScoreList = await getItemScoreList(items);
+	const itemScoreList = [];
+	for (const item of items) {
+		itemScoreList.push( { item: item });
+	}
 	const rankScale = await generateScoreScale(rankRules, ranking, itemScoreList);
 	await scoreAndSortItems(rankRules, itemScoreList, rankScale);
 	return itemScoreList;
@@ -20,26 +22,6 @@ async function scoreAndSortItems(rankRules, itemScoreList, rankScale) {
 	await Promise.all(promises);
 
 	itemScoreList.sort((alpha, beta) => beta.score - alpha.score);
-}
-
-async function getItemScoreList(items) {
-	let itemList = items;
-	if (!itemList) {
-		itemList = cache.get('/v1/items');
-		if (!itemList) {
-			const res = await axios.get(PHONE_BASE_URL + '/v1/items');
-			itemList = res.data;
-			const ttl = res.headers['cache-control'] ? res.headers['cache-control'].match(/max-age=(\d+)/i)[1] : 600;
-			cache.set('/v1/items', itemList, ttl);
-		}
-	}
-
-	const promises = [];
-	for (const item of itemList) {
-		promises.push(getItemScore(item));
-	}
-
-	return Promise.all(promises);
 }
 
 /**
@@ -61,21 +43,6 @@ async function generateScoreScale(rankRules, rankList, itemScoreList) {
 	}
 
 	return scales;
-}
-
-async function getItemScore(item) {
-	const url =
-		'/v1/items/' +
-		(item.href ?? 'manufacturers/' + item.manufacturer.toLowerCase() + '/models/' + item.model.toLowerCase());
-	let data = cache.get(url);
-	if (!data) {
-		const res = await axios.get(PHONE_BASE_URL + url);
-		data = res.data;
-		const ttl = res.headers['cache-control'] ? res.headers['cache-control'].match(/max-age=(\d+)/i)[1] : 600;
-		cache.set(url, data, ttl);
-	}
-
-	return {href: url, item: data};
 }
 
 function scoreNumber(value, rankRule, rankScale) {
