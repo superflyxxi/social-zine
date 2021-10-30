@@ -54,8 +54,17 @@ jobs:
       project:
         description: The sub-project to work on.
         type: string
+      pack:
+        description: Wether to package the project.
+        type: boolean
+        default: false
     steps:
+      - attach_workspace:
+          at: /tmp/workspace
       - checkout
+      - run:
+          name: Copy packages
+          command: cp -v /tmp/workspace/superflyxxi-common*.tgz common/
       - node/install-packages:
           app-dir: ./<< parameters.project >>
       - run:
@@ -80,6 +89,17 @@ jobs:
           root: ./
           paths:
             - ./*coverage.tar*
+      - when:
+          condition: << parameters.pack >>
+          steps:
+            - run:
+                name: Create package
+                working_directory: ./<< parameters.project >>
+                command: npm pack
+            - persist_to_workspace:
+                root: ./
+                paths:
+                  - ./*.tgz
 
   validate-format:
     resource_class: small
@@ -297,6 +317,7 @@ workflows:
           context: default
           name: build-js-common
           project: common
+          pack: true
       - build-js:
           context: default
           requires:
