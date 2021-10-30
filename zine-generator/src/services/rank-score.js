@@ -9,19 +9,19 @@ const PHONE_BASE_URL = process.env.PHONE_BASE_URL ?? 'http://localhost:' + serve
 
 export default async function compare(req, res) {
 	const ranking = req.body.ranking;
-	const itemScoreList = await getPhoneScoreList(req.body.items);
-	const rankScale = await generateScoreScale(ranking, itemScoreList);
-	await scoreAndSortPhones(itemScoreList, rankScale);
+	const itemScoreList = await getItemScoreList(req.body.items);
+	const rankScale = await generateScoreScale(rankRules, ranking, itemScoreList);
+	await scoreAndSortItems(rankRules, itemScoreList, rankScale);
 	res.set('cache-control', 'public, max-age=2419200').send({
 		best: itemScoreList[0],
 		results: itemScoreList,
 	});
 }
 
-async function scoreAndSortPhones(itemScoreList, rankScale) {
+async function scoreAndSortItems(rankRules, itemScoreList, rankScale) {
 	const promises = [];
 	for (const itemScore of itemScoreList) {
-		promises.push(getFinalScore(rankScale, itemScore));
+		promises.push(getFinalScore(rankRules, rankScale, itemScore));
 	}
 
 	await Promise.all(promises);
@@ -29,7 +29,7 @@ async function scoreAndSortPhones(itemScoreList, rankScale) {
 	itemScoreList.sort((alpha, beta) => beta.score - alpha.score);
 }
 
-async function getPhoneScoreList(items) {
+async function getItemScoreList(items) {
 	let itemList = items;
 	if (!itemList) {
 		itemList = cache.get('/v1/items');
@@ -43,7 +43,7 @@ async function getPhoneScoreList(items) {
 
 	const promises = [];
 	for (const item of itemList) {
-		promises.push(getPhoneScore(item));
+		promises.push(getItemScore(item));
 	}
 
 	return Promise.all(promises);
@@ -55,7 +55,7 @@ async function getPhoneScoreList(items) {
  * each mm, it would be equal to X points. If the min height is 140 and the max is 145, then
  * each mm is worth Y points, where Y > X.
  */
-async function generateScoreScale(rankList, itemScoreList) {
+async function generateScoreScale(rankRules, rankList, itemScoreList) {
 	const scales = {};
 
 	for (const rank of rankList) {
@@ -70,7 +70,7 @@ async function generateScoreScale(rankList, itemScoreList) {
 	return scales;
 }
 
-async function getPhoneScore(item) {
+async function getItemScore(item) {
 	const url =
 		'/v1/items/' +
 		(item.href ?? 'manufacturers/' + item.manufacturer.toLowerCase() + '/models/' + item.model.toLowerCase());
@@ -115,7 +115,7 @@ function scoreVersion(value, rankRule, rankScale) {
 	return 0;
 }
 
-async function getFinalScore(rankScale, itemScore) {
+async function getFinalScore(rankRules, rankScale, itemScore) {
 	itemScore.scoreBreakdown = {};
 	itemScore.score = 0;
 	for (const rank in rankScale) {
