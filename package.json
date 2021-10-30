@@ -1,7 +1,9 @@
 {
   "name": "social-zine",
   "description": "Social Network Magazine",
-  "scripts": {},
+  "scripts": {
+    "xo": "xo"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/superflyxxi/social-zine.git"
@@ -14,6 +16,7 @@
   "homepage": "https://github.com/superflyxxi/social-zine#readme",
   "devDependencies": {
     "@semantic-release/exec": "^6.0.1",
-    "semantic-release": "^18.0.0"
+    "semantic-release": "^18.0.0",
+    "xo": "^0.46.3"
   }
 }
