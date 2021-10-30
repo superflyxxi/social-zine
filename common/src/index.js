@@ -1,9 +1,7 @@
 import process from 'node:process';
 import {v4 as uuidv4} from 'uuid';
 
-export {errorHandler, RootError}
-
-function errrorHandler(error, req, res, next) {
+function errorHandler(error, req, res, next) {
 	console.log('error encountered', error);
 	if (res.headersSent) {
 		return next(error);
@@ -30,3 +28,5 @@ class RootError extends Error {
 		this.detail = detail;
 	}
 }
+
+export default {errorHandler, RootError}
