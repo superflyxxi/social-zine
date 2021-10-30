@@ -29,10 +29,46 @@ describe('Error-handler', () => {
 	});
 
 	it('No attributes populated', () => {
-		expect.fail('Missing test');
+		let nextCalled = false;
+		let message;
+		const res = {
+			status: () => {
+				return {
+					send: (input) => {
+						message = input;
+					},
+				};
+			},
+		};
+		library.errorHandler({}, undefined, res, () => {
+			nextCalled = true;
+		});
+		expect(nextCalled).to.deep.equal(false, 'Next Called');
+		expect(message).to.deep.include({
+			type: '/errors/SYSTEM_ERROR',
+			title: 'System Error',
+			status: 500,
+			detail: 'An unknown system error has occurred.',
+		});
 	});
 
-	it('Minimum attributes populated', () => {
-		expect.fail('Missing test');
+	it('Headers sent', () => {
+		let nextCalled = false;
+		let message;
+		const res = {
+			headersSent: true,
+			status: () => {
+				return {
+					send: (input) => {
+						message = input;
+					},
+				};
+			},
+		};
+		library.errorHandler({}, undefined, res, () => {
+			nextCalled = true;
+		});
+		expect(nextCalled).to.deep.equal(true, 'Next Called');
+		expect(message).to.deep.equal(undefined, 'Message populated');
 	});
 });
