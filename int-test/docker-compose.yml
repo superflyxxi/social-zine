@@ -7,7 +7,7 @@ services:
     environment:
       NODE_ENV: development
   test:
-    image: ${DOCKER_REGISTRY}/social-zine/zine-generator:inttest-${PRIMARY_DOCKER_TAG}
+    image: ${DOCKER_REGISTRY}/social-zine/int-test:${PRIMARY_DOCKER_TAG}
     depends_on:
       - app
     restart: "no"

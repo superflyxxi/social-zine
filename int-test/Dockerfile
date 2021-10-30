@@ -1,7 +1,6 @@
-ARG FROM_IMAGE
-FROM ${FROM_IMAGE}
+FROM node:16.10.0-alpine3.11
 ENV NODE_ENV=test
-RUN npm install
 ENTRYPOINT ["npm"]
-CMD ["run", "int-test"]
+CMD ["test"]
 ADD int-test /app/int-test
+RUN npm install
