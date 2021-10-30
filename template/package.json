@@ -6,9 +6,7 @@
   "scripts": {
     "start": "node src/index.js",
     "test": "c8 mocha ${MOCHA_ARGS}",
-    "int-test": "mocha ${MOCHA_ARGS} int-test/",
-    "xo-fix": "xo --fix",
-    "xo-verify": "xo"
+    "int-test": "mocha ${MOCHA_ARGS} int-test/"
   },
   "author": "SuperFlyXXI <superflyxxi@yahoo.com>",
   "license": "Apache-2.0",
@@ -22,7 +20,6 @@
     "node-cache": "^5.1.2",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.1.6",
-    "uuid": "^8.3.2",
     "validate.js": "^0.13.1"
   },
   "devDependencies": {
