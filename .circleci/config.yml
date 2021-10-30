@@ -80,11 +80,19 @@ jobs:
           root: ./
           paths:
             - ./*coverage.tar*
+
+  validate-format:
+    resource_class: small
+    executor: 
+      name: node/default
+      tag: '16.5.0'
+    steps:
+      - checkout
       - node/install-packages
       - run:
           name: Verify XO
           command: |
-            npm run xo -- << parameters.project >>/
+            find . -maxdepth 1 -type d | grep -v "\./\..*" | xargs npm run xo -- 
 
   sonar-scan:
     executor: 
@@ -303,6 +311,8 @@ workflows:
           matrix:
             parameters:
               project: ["zine-generator"]
+      - validate-format:
+          context: default
       - sonar-scan:
           context: default
           requires:
@@ -319,6 +329,7 @@ workflows:
           requires:
             - validate-dockerfiles
             - build-js
+            - validate-format
             - pre-release
       - release:
           prerelease: false
