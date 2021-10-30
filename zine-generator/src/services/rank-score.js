@@ -1,21 +1,14 @@
 import process from 'node:process';
 import axios from 'axios';
 import lodash from 'lodash';
-import {server, rankRules} from '../config/index.js';
 import * as versions from '../helpers/versions.js';
 import cache from '../helpers/cache.js';
 
-const PHONE_BASE_URL = process.env.PHONE_BASE_URL ?? 'http://localhost:' + server.port;
-
-export default async function compare(req, res) {
-	const ranking = req.body.ranking;
-	const itemScoreList = await getItemScoreList(req.body.items);
+export default async function rank(rankRules, ranking, items) {
+	const itemScoreList = await getItemScoreList(items);
 	const rankScale = await generateScoreScale(rankRules, ranking, itemScoreList);
 	await scoreAndSortItems(rankRules, itemScoreList, rankScale);
-	res.set('cache-control', 'public, max-age=2419200').send({
-		best: itemScoreList[0],
-		results: itemScoreList,
-	});
+	return itemScoreList;
 }
 
 async function scoreAndSortItems(rankRules, itemScoreList, rankScale) {
