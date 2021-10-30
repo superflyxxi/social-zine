@@ -261,6 +261,8 @@ jobs:
       - checkout
       - docker/build:
           step-name: Build integration testing docker image
+          docker-context: ./int-test
+          path: ./int-test
           image: ${CIRCLE_PROJECT_REPONAME}/int-test
           registry: ${DOCKER_REGISTRY}
           tag: ${PRIMARY_DOCKER_TAG}
