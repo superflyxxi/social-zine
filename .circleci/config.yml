@@ -64,7 +64,9 @@ jobs:
       - checkout
       - run:
           name: Copy packages
-          command: cp -v /tmp/workspace/superflyxxi-common*.tgz common/ || true
+          command: |
+            ls -lha /tmp/workspace
+            cp -v /tmp/workspace/superflyxxi-common*.tgz common/ || true
       - node/install-packages:
           app-dir: ./<< parameters.project >>
       - run:
