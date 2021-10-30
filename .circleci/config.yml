@@ -99,7 +99,7 @@ jobs:
             - persist_to_workspace:
                 root: ./
                 paths:
-                  - ./*.tgz
+                  - ./<< paramters.project >>/*.tgz
 
   validate-format:
     resource_class: small
