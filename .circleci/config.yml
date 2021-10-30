@@ -45,7 +45,7 @@ commands:
             sshpass -e ssh ${SSH_USER}@${SSH_SERVER} -p ${SSH_PORT} "${SSH_DOCKER_COMPOSE_REMOTE_DIR}/<< parameters.command >>"
 
 jobs:
-  unit-test:
+  build-js:
     resource_class: small
     executor: 
       name: node/default
@@ -293,21 +293,21 @@ workflows:
           name: pre-release
           context: default
           prerelease: true
-      - unit-test:
+      - build-js:
           context: default
-          name: unit-test-common
+          name: build-js-common
           project: common
-      - unit-test:
+      - build-js:
           context: default
           requires:
-            - unit-test-common
+            - build-js-common
           matrix:
             parameters:
               project: ["zine-generator"]
       - sonar-scan:
           context: default
           requires:
-            - unit-test
+            - build-js
       - docker/hadolint:
           name: validate-dockerfiles
           context: default
@@ -319,7 +319,7 @@ workflows:
               project: ["zine-generator"]
           requires:
             - validate-dockerfiles
-            - unit-test
+            - build-js
             - pre-release
       - release:
           prerelease: false
