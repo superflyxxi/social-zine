@@ -7,8 +7,7 @@
     "start": "node src/index.js",
     "test": "c8 mocha ${MOCHA_ARGS}",
     "int-test": "mocha ${MOCHA_ARGS} int-test/",
-    "xo-fix": "xo --fix",
-    "xo-verify": "xo"
+    "xo": "xo"
   },
   "author": "SuperFlyXXI <superflyxxi@yahoo.com>",
   "license": "Apache-2.0",
