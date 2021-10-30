@@ -66,6 +66,7 @@ jobs:
           name: Copy packages
           command: |
             ls -lha /tmp/workspace
+            ls -lha /tmp/workspace/common
             cp -v /tmp/workspace/superflyxxi-common*.tgz common/ || true
       - node/install-packages:
           app-dir: ./<< parameters.project >>
@@ -99,9 +100,9 @@ jobs:
                 working_directory: ./<< parameters.project >>
                 command: npm pack
             - persist_to_workspace:
-                root: ./
+                root: ./<< parameters.project >>
                 paths:
-                  - ./<< parameters.project >>/*.tgz
+                  - ./*.tgz
 
   validate-format:
     resource_class: small
