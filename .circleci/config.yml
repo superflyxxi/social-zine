@@ -295,6 +295,12 @@ workflows:
           prerelease: true
       - unit-test:
           context: default
+          name: unit-test-common
+          project: common
+      - unit-test:
+          context: default
+          requires:
+            - unit-test-common
           matrix:
             parameters:
               project: ["zine-generator"]
