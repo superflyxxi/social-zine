@@ -71,4 +71,24 @@ describe('Error-handler', () => {
 		expect(nextCalled).to.deep.equal(true, 'Next Called');
 		expect(message).to.deep.equal(undefined, 'Message populated');
 	});
+
+	it('RootError', () => {
+		let message;
+		const res = {
+			status: () => {
+				return {
+					send: (input) => {
+						message = input;
+					},
+				};
+			},
+		};
+		library.errorHandler(new library.RootError('RootType', 'RootTitle', 401, 'RootDetail'), undefined, res, () => true);
+		expect(message).to.deep.include({
+			type: 'RootType',
+			title: 'RootTitle',
+			status: 401,
+			detail: 'RootDetail',
+		});
+	});
 });
