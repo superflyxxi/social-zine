@@ -29,12 +29,4 @@ describe('Error-handler', () => {
 	it('Minimum attributes populated', () => {
 		expect.fail('Missing test');
 	});
-
-	it('No attributes populated', () => {
-		expect.fail('Missing test');
-	});
-
-	it('No attributes populated', () => {
-		expect.fail('Missing test');
-	});
 });
