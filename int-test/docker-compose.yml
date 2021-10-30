@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  app:
+  zine-generator:
     image: ${DOCKER_REGISTRY}/social-zine/zine-generator:${PRIMARY_DOCKER_TAG}
     restart: always
     environment:
@@ -9,7 +9,7 @@ services:
   test:
     image: ${DOCKER_REGISTRY}/social-zine/int-test:${PRIMARY_DOCKER_TAG}
     depends_on:
-      - app
+      - zine-generator
     restart: "no"
     environment:
       BASE_URL: "http://app:3000"
