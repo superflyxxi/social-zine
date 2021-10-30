@@ -80,6 +80,7 @@ jobs:
           root: ./
           paths:
             - ./*coverage.tar*
+      - node/install-packages
       - run:
           name: Verify XO
           command: |
