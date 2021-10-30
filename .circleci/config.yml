@@ -266,7 +266,6 @@ jobs:
           image: ${CIRCLE_PROJECT_REPONAME}/int-test
           registry: ${DOCKER_REGISTRY}
           tag: ${PRIMARY_DOCKER_TAG}
-          dockerfile: int-test/Dockerfile
       - docker/check:
           registry: ${DOCKER_REGISTRY}
       - docker/push:
