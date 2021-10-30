@@ -1,13 +1,12 @@
-import process from 'node:process';
-import axios from 'axios';
 import lodash from 'lodash';
 import * as versions from '../helpers/versions.js';
 
 export default async function rank(rankRules, ranking, items) {
 	const itemScoreList = [];
 	for (const item of items) {
-		itemScoreList.push( { item: item });
+		itemScoreList.push({item});
 	}
+
 	const rankScale = await generateScoreScale(rankRules, ranking, itemScoreList);
 	await scoreAndSortItems(rankRules, itemScoreList, rankScale);
 	return itemScoreList;
@@ -81,21 +80,23 @@ async function getFinalScore(rankRules, rankScale, itemScore) {
 	for (const rank in rankScale) {
 		const value = lodash.get(itemScore.item, rank);
 		let score = 0;
-		switch (rankRules[rank].type) {
-			case 'number':
-				score = scoreNumber(value, rankRules[rank], rankScale[rank]);
-				break;
+		if (rankRules[rank]) {
+			switch (rankRules[rank].type) {
+				case 'number':
+					score = scoreNumber(value, rankRules[rank], rankScale[rank]);
+					break;
 
-			case 'boolean':
-				score = scoreBoolean(value, rankRules[rank], rankScale[rank]);
-				break;
+				case 'boolean':
+					score = scoreBoolean(value, rankRules[rank], rankScale[rank]);
+					break;
 
-			case 'version':
-				score = scoreVersion(value, rankRules[rank], rankScale[rank]);
-				break;
+				case 'version':
+					score = scoreVersion(value, rankRules[rank], rankScale[rank]);
+					break;
 
-			default:
-				console.error('Invalid type configured: rank=', rank, 'type=', rankRules[rank].type);
+				default:
+					console.error('Invalid type configured: rank=', rank, 'type=', rankRules[rank].type);
+			}
 		}
 
 		itemScore.scoreBreakdown[rank] = score;
@@ -107,70 +108,74 @@ async function getFinalScore(rankRules, rankScale, itemScore) {
 
 function initScoreScaleForRank(rank, rankRule, itemScoreList) {
 	const result = {};
-	const mapValues = {};
-	switch (rankRule.type) {
-		case 'number':
-			mapValues.values = [];
-			break;
-		case 'version':
-			mapValues.major = [];
-			mapValues.minor = [];
-			mapValues.patch = [];
-			break;
-		default:
-			// Skip any types that don't need counting
-			return result;
-	}
+	if (rankRule) {
+		const mapValues = {};
+		switch (rankRule.type) {
+			case 'number':
+				mapValues.values = [];
+				break;
+			case 'version':
+				mapValues.major = [];
+				mapValues.minor = [];
+				mapValues.patch = [];
+				break;
+			default:
+				// Skip any types that don't need counting
+				return result;
+		}
 
-	for (const itemScore of itemScoreList) {
-		const value = lodash.get(itemScore.item, rank);
+		for (const itemScore of itemScoreList) {
+			const value = lodash.get(itemScore.item, rank);
 
-		if (value) {
-			let version;
-			switch (rankRule.type) {
-				case 'number':
-					mapValues.values.push(value);
-					break;
-				case 'version':
-					version = versions.getVersionObject(value);
-					if (version?.major) mapValues.major.push(version.major);
-					if (version?.minor) mapValues.minor.push(version.minor);
-					if (version?.patch) mapValues.patch.push(version.patch);
-					break;
-				default:
-				// Should never get here
+			if (value) {
+				let version;
+				switch (rankRule.type) {
+					case 'number':
+						mapValues.values.push(value);
+						break;
+					case 'version':
+						version = versions.getVersionObject(value);
+						if (version?.major) mapValues.major.push(version.major);
+						if (version?.minor) mapValues.minor.push(version.minor);
+						if (version?.patch) mapValues.patch.push(version.patch);
+						break;
+					default:
+					// Should never get here
+				}
 			}
 		}
-	}
 
-	for (const item of Object.keys(mapValues)) {
-		result[item] = {};
-		result[item].max = Math.max(...mapValues[item]);
-		result[item].min = Math.min(...mapValues[item]);
+		for (const item of Object.keys(mapValues)) {
+			result[item] = {};
+			result[item].max = Math.max(...mapValues[item]);
+			result[item].min = Math.min(...mapValues[item]);
+		}
 	}
 
 	return result;
 }
 
 function populateScoreScaleForRank(scoreScale, maxPoints, rankRule) {
-	let temporarySemantic;
-	let semantic = 'major';
-	switch (rankRule.type) {
-		case 'number':
-			scoreScale.multiplier = maxPoints / (scoreScale.values.max - scoreScale.values.min);
-			break;
-		case 'version':
-			for (temporarySemantic of ['major', 'minor', 'patch']) {
-				if (scoreScale[temporarySemantic]?.max !== scoreScale[temporarySemantic]?.min) {
-					semantic = temporarySemantic;
-					break;
+	if (rankRule) {
+		let temporarySemantic;
+		let semantic = 'major';
+		switch (rankRule.type) {
+			case 'number':
+				scoreScale.multiplier = maxPoints / (scoreScale.values.max - scoreScale.values.min);
+				break;
+			case 'version':
+				for (temporarySemantic of ['major', 'minor', 'patch']) {
+					if (scoreScale[temporarySemantic]?.max !== scoreScale[temporarySemantic]?.min) {
+						semantic = temporarySemantic;
+						break;
+					}
 				}
-			}
 
-			scoreScale.semantic = semantic;
-			scoreScale.multiplier = maxPoints / (scoreScale[semantic].max - scoreScale[semantic].min);
-			break;
-		default:
-			scoreScale.multiplier = maxPoints;
+				scoreScale.semantic = semantic;
+				scoreScale.multiplier = maxPoints / (scoreScale[semantic].max - scoreScale[semantic].min);
+				break;
+			default:
+				scoreScale.multiplier = maxPoints;
+		}
 	}
 }
