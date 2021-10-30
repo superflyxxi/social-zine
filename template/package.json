@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "test": "c8 mocha ${MOCHA_ARGS}",
-    "int-test": "mocha ${MOCHA_ARGS} int-test/",
+    "test": "c8 mocha",
     "xo": "xo"
   },
   "author": "SuperFlyXXI <superflyxxi@yahoo.com>",
