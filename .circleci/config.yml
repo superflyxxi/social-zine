@@ -250,37 +250,30 @@ jobs:
 
   integration-test:
     executor: docker/machine
-    parameters:
-      project:
-        description: The sub-project to work on.
-        type: string
     steps:
       - attach_workspace:
           at: /tmp/workspace
       - export-primary-docker-tag
       - run:
-          name: Load docker image
-          command: docker load -i /tmp/workspace/<< parameters.project >>-image.tar
+          name: Load docker images
+          command: |
+            find /tmp/workspace -name '*-image.tar' -exec docker load -i {} \;
       - checkout
       - docker/build:
           step-name: Build integration testing docker image
-          docker-context: ./<< parameters.project >>
-          path: ./<< parameters.project >>
-          image: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
+          image: ${CIRCLE_PROJECT_REPONAME}/int-test
           registry: ${DOCKER_REGISTRY}
-          tag: inttest-${PRIMARY_DOCKER_TAG}
+          tag: ${PRIMARY_DOCKER_TAG}
           dockerfile: int-test/Dockerfile
-          extra_build_args: --build-arg FROM_IMAGE=${DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:${PRIMARY_DOCKER_TAG}
       - docker/check:
           registry: ${DOCKER_REGISTRY}
       - docker/push:
           step-name: Push integration testing docker image
-          image: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
+          image: ${CIRCLE_PROJECT_REPONAME}/int-test
           registry: ${DOCKER_REGISTRY}
-          tag: inttest-${PRIMARY_DOCKER_TAG}
+          tag: ${PRIMARY_DOCKER_TAG}
       - run:
           name: Generate docker-compose file
-          working_directory: ./<< parameters.project >>
           command: |
             cat int-test/docker-compose.yml |\
               sed "s#\${DOCKER_REGISTRY}#${DOCKER_REGISTRY}#g" |\
@@ -289,7 +282,6 @@ jobs:
             cat docker-compose.ci-test.yml
       - run:
           name: Bring up
-          working_directory: ./<< parameters.project >>
           command: |
             docker-compose -f docker-compose.ci-test.yml up --abort-on-container-exit --exit-code-from test
 
@@ -364,9 +356,6 @@ workflows:
                 - main
       - integration-test:
           context: default
-          matrix:
-            parameters:
-              project: ["zine-generator"]
           requires:
             - build-docker
           filters:
