@@ -105,7 +105,7 @@ jobs:
       - run:
           name: Untar coverage
           command: |
-            tar -vxf ./*coverage.tar*
+            find ./ -maxdepth 1 -name '*coverage.tar*' -exec tar -vxf {} \;
       - run:
           name: Configure sonar-project.properties
           command: |
