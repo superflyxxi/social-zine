@@ -3,7 +3,8 @@ import { strict as assert } from 'assert';
 
 describe('Rank Score Tests', () => {
 	it('Rank empty items', (done) => {
-		assert.fail('Missing tests');
+		const res = service.rank({}, [], []);
+		assert.deepEqual(res, []);
 		done();
 	});
 
