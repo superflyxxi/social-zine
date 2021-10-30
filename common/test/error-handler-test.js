@@ -1,5 +1,5 @@
 import chai from 'chai';
-import library from '../src/index.js';
+import {errorHandler, NotFoundError, RootError} from '../src/index.js';
 
 const {expect} = chai;
 
@@ -16,7 +16,7 @@ describe('Error-handler', () => {
 				};
 			},
 		};
-		library.errorHandler({type: 'MyType', title: 'My Title', status: 400, detail: 'My Detail'}, undefined, res, () => {
+		errorHandler({type: 'MyType', title: 'My Title', status: 400, detail: 'My Detail'}, undefined, res, () => {
 			nextCalled = true;
 		});
 		expect(nextCalled).to.deep.equal(false, 'Next Called');
@@ -40,7 +40,7 @@ describe('Error-handler', () => {
 				};
 			},
 		};
-		library.errorHandler({}, undefined, res, () => {
+		errorHandler({}, undefined, res, () => {
 			nextCalled = true;
 		});
 		expect(nextCalled).to.deep.equal(false, 'Next Called');
@@ -65,7 +65,7 @@ describe('Error-handler', () => {
 				};
 			},
 		};
-		library.errorHandler({}, undefined, res, () => {
+		errorHandler({}, undefined, res, () => {
 			nextCalled = true;
 		});
 		expect(nextCalled).to.deep.equal(true, 'Next Called');
@@ -83,7 +83,7 @@ describe('Error-handler', () => {
 				};
 			},
 		};
-		library.errorHandler(new library.RootError('RootType', 'RootTitle', 401, 'RootDetail'), undefined, res, () => true);
+		errorHandler(new RootError('RootType', 'RootTitle', 401, 'RootDetail'), undefined, res, () => true);
 		expect(message).to.deep.include({
 			type: 'RootType',
 			title: 'RootTitle',
@@ -103,7 +103,7 @@ describe('Error-handler', () => {
 				};
 			},
 		};
-		library.errorHandler(new library.NotFoundError('Not Found Detail'), undefined, res, () => true);
+		errorHandler(new NotFoundError('Not Found Detail'), undefined, res, () => true);
 		expect(message).to.deep.include({
 			type: '/errors/NOT_FOUND',
 			title: 'Not Found',
