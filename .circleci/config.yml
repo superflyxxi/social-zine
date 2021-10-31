@@ -336,7 +336,7 @@ workflows:
       - docker/hadolint:
           name: validate-dockerfiles
           context: default
-          dockerfiles: "common/Dockerfile:zine-generator/Dockerfile:template/Dockerfile"
+          dockerfiles: "common/Dockerfile:int-test/Dockerfile:template/Dockerfile:zine-generator/Dockerfile"
       - build-docker:
           context: default
           project: common
