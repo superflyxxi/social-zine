@@ -1,4 +1,5 @@
 import process from 'node:process';
+import validatejs from 'validate.js';
 import {v4 as uuidv4} from 'uuid';
 
 export function errorHandler(error, req, res, next) {
@@ -44,5 +45,12 @@ export class RouteNotFoundError extends NotFoundError {
 export class ValidationError extends RootError {
 	constructor(result) {
 		super('/errors/VALIDATION_ERROR', 'Validation Error', 400, result);
+	}
+}
+
+export default function validate(object, constraints) {
+	const result = validatejs(object, constraints);
+	if (result) {
+		throw new ValidationError(result);
 	}
 }
