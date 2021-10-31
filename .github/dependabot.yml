@@ -6,7 +6,7 @@ updates:
     schedule:
       interval: "monthly"
     commit-message:
-      prefix-development: "fix(template): "
+      prefix-development: "fix(ci): "
     reviewers:
       - superflyxxi
   - package-ecosystem: "npm"
@@ -25,6 +25,24 @@ updates:
     commit-message:
       prefix: "fix(zine-generator): "
       prefix-development: "fix(zine-generator): "
+    reviewers:
+      - superflyxxi
+  - package-ecosystem: "npm"
+    directory: "/common"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "fix(common): "
+      prefix-development: "fix(common): "
+    reviewers:
+      - superflyxxi
+  - package-ecosystem: "docker"
+    directory: "/common"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "fix(common): "
+      prefix-development: "fix(common): "
     reviewers:
       - superflyxxi
   - package-ecosystem: "npm"
