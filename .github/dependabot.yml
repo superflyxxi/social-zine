@@ -6,7 +6,8 @@ updates:
     schedule:
       interval: "monthly"
     commit-message:
-      prefix-development: "fix(deps-dev): "
+      prefix: "fix(ci): "
+      prefix-development: "fix(ci): "
     reviewers:
       - superflyxxi
   - package-ecosystem: "npm"
