@@ -232,10 +232,10 @@ jobs:
       - when:
           condition: << parameters.prerelease >>
           steps:
-            run:
-              name: Define additional args
-              command: |
-                echo "export ADDITIONAL_ARGS=--dry-run" >> ${BASH_ENV}
+            - run:
+                name: Define additional args
+                command: |
+                  echo "export ADDITIONAL_ARGS=--dry-run" >> ${BASH_ENV}
       - run:
           name: Run semantic-release
           command: |
@@ -254,6 +254,7 @@ jobs:
             - short_version.txt
 
   deploy:
+    executor: docker/machine
     parameters:
       project:
         description: The sub-project to work on.
@@ -263,8 +264,6 @@ jobs:
         type: enum
         default: "wip"
         enum: ["wip", "prod"]
-    machine:
-      enabled: true
     steps:
       - attach_workspace:
           at: /tmp/workspace
@@ -392,7 +391,7 @@ workflows:
             - build-docker
           filters:
             branches:
-              not:
+              ignore:
                 - main
       - deploy:
           context: default
