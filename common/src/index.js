@@ -48,7 +48,7 @@ export class ValidationError extends RootError {
 	}
 }
 
-export default function validate(object, constraints) {
+export function validate(object, constraints) {
 	const result = validatejs(object, constraints);
 	if (result) {
 		throw new ValidationError(result);
