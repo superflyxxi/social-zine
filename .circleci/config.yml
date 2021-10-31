@@ -69,7 +69,7 @@ jobs:
 #            ls -lha /tmp/workspace/common || true
 #            cp -v /tmp/workspace/superflyxxi-common*.tgz common/ || true
       - node/install-packages:
-          app-dir: ../common
+          app-dir: common/
       - node/install-packages:
           app-dir: ./<< parameters.project >>
       - run:
