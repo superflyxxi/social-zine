@@ -79,7 +79,7 @@ jobs:
           name: Unit Tests
           working_directory: ./<< parameters.project >>
           environment:
-            MOCHA_FILE: ./mocha/test-results.xml
+            MOCHA_FILE: ./test-results.xml
             MOCHA_ARGS: --forbid-pending --forbid-only --reporter mocha-junit-reporter
           command: |
             cp -v ../.c8rc.json ../.mocharc.json ./
@@ -88,9 +88,7 @@ jobs:
           name: Tar coverage
           command: tar -vcf << parameters.project >>-coverage.tar << parameters.project >>/coverage/
       - store_test_results:
-          path: ./<< parameters.project >>/mocha
-      - store_artifacts:
-          path: ./<< parameters.project >>/mocha/test-results.xml
+          path: ./<< parameters.project >>/test-results.xml
       - store_artifacts:
           path: ./<< parameters.project >>/coverage/
       - persist_to_workspace:
