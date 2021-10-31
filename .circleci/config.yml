@@ -82,7 +82,7 @@ jobs:
             MOCHA_FILE: ./mocha/test-results.xml
             MOCHA_ARGS: --forbid-pending --forbid-only --reporter mocha-junit-reporter
           command: |
-            cp -v ../template/.c8rc.json ../template/.mocharc.json ./
+            cp -v ../.c8rc.json ../.mocharc.json ./
             npm test
       - run:
           name: Tar coverage
