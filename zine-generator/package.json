@@ -13,7 +13,7 @@
   "author": "SuperFlyXXI <superflyxxi@yahoo.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "@superflyxxi/common": "file:../common/superflyxxi-common-0.0.0.tgz",
+    "@superflyxxi/common": "file:../common",
     "axios": "^0.21.2",
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
