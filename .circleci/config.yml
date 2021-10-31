@@ -352,12 +352,19 @@ workflows:
           dockerfiles: "template/Dockerfile"
       - build-docker:
           context: default
+          project: common
+          name: build-docker-common
+          requires:
+            - pre-release
+      - build-docker:
+          context: default
           matrix:
             parameters:
               project: ["zine-generator"]
           requires:
             - validate-dockerfiles
             - build-js
+            - build-docker-common
             - validate-format
             - pre-release
       - release:
