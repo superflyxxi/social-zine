@@ -112,7 +112,50 @@ describe('Basic Validation', function () {
 		});
 	});
 
-	it('Integer');
+	describe('Integer Validations', function () {
+		it('String', function () {
+			expect(function () {
+				validate(everything, {
+					s: {presence: false, type: 'integer'},
+				});
+			}).to.throw(ValidationError);
+		});
+		it('Bool', function () {
+			expect(function () {
+				validate(everything, {
+					b: {presence: false, type: 'integer'},
+				});
+			}).to.throw(ValidationError);
+		});
+		it('Integer', function () {
+			expect(function () {
+				validate(everything, {
+					i: {presence: false, type: 'integer'},
+				});
+			}).to.not.throw(ValidationError);
+		});
+		it('Decimal', function () {
+			expect(function () {
+				validate(everything, {
+					d: {presence: false, type: 'integer'},
+				});
+			}).to.throw(ValidationError);
+		});
+		it('Array', function () {
+			expect(function () {
+				validate(everything, {
+					a: {presence: false, type: 'integer'},
+				});
+			}).to.throw(ValidationError);
+		});
+		it('Object', function () {
+			expect(function () {
+				validate(everything, {
+					o: {presence: false, type: 'integer'},
+				});
+			}).to.throw(ValidationError);
+		});
+	});
 
 	it('Decimal');
 
