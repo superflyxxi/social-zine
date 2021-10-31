@@ -6,7 +6,7 @@ updates:
     schedule:
       interval: "monthly"
     commit-message:
-      prefix-development: "fix(dev-deps): "
+      prefix-development: "fix(deps-dev): "
     reviewers:
       - superflyxxi
   - package-ecosystem: "npm"
@@ -15,7 +15,7 @@ updates:
       interval: "monthly"
     commit-message:
       prefix: "fix(zine-generator): "
-      prefix-development: "fix(dev-deps): "
+      prefix-development: "fix(deps-dev): "
     reviewers:
       - superflyxxi
   - package-ecosystem: "docker"
@@ -24,7 +24,7 @@ updates:
       interval: "monthly"
     commit-message:
       prefix: "fix(zine-generator): "
-      prefix-development: "fix(dev-deps): "
+      prefix-development: "fix(deps-dev): "
     reviewers:
       - superflyxxi
   - package-ecosystem: "npm"
@@ -33,7 +33,7 @@ updates:
       interval: "monthly"
     commit-message:
       prefix: "fix(common): "
-      prefix-development: "fix(dev-deps): "
+      prefix-development: "fix(deps-dev): "
     reviewers:
       - superflyxxi
   - package-ecosystem: "docker"
@@ -42,7 +42,7 @@ updates:
       interval: "monthly"
     commit-message:
       prefix: "fix(common): "
-      prefix-development: "fix(dev-deps): "
+      prefix-development: "fix(deps-dev): "
     reviewers:
       - superflyxxi
   - package-ecosystem: "npm"
@@ -51,7 +51,7 @@ updates:
       interval: "monthly"
     commit-message:
       prefix: "fix(template): "
-      prefix-development: "fix(dev-deps): "
+      prefix-development: "fix(deps-dev): "
     reviewers:
       - superflyxxi
   - package-ecosystem: "docker"
@@ -60,6 +60,6 @@ updates:
       interval: "monthly"
     commit-message:
       prefix: "fix(template): "
-      prefix-development: "fix(dev-deps): "
+      prefix-development: "fix(deps-dev): "
     reviewers:
       - superflyxxi
