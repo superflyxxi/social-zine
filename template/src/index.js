@@ -1,7 +1,6 @@
 import express from 'express';
 import morgan from 'morgan';
-import errorHandler from './error-handler/index.js';
-import RouteNotFoundError from './error-handler/route-not-found-error.js';
+import {RouteNotFoundError, errorHandler} from '@superflyxxi/common';
 import apiDocsRouter from './routers/api-docs/index.js';
 import {server} from './config/index.js';
 

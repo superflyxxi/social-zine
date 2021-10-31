@@ -1,0 +1,25 @@
+{
+  "name": "@superflyxxi/common",
+  "version": "0.0.0",
+  "description": "Common utilities",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "c8 mocha"
+  },
+  "private": true,
+  "author": "SuperFlyXXI <superflyxxi@yahoo.com>",
+  "license": "Apache-2.0",
+  "files": [
+    "src/index.js"
+  ],
+  "devDependencies": {
+    "c8": "^7.10.0",
+    "chai": "^4.3.4",
+    "mocha": "^9.1.3",
+    "mocha-junit-reporter": "^2.0.2"
+  },
+  "dependencies": {
+    "uuid": "^8.3.2"
+  }
+}

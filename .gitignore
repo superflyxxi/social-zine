@@ -1,12 +1,7 @@
 **/.c8rc.json
-!template/.c8rc.json
+!/.c8rc.json
 **/.mocharc.json
-!template/.mocharc.json
-**/.xo-config.json
-!template/.xo-config.json
-**/.prettierrc.json
-!template/.prettierrc.json
-
+!/.mocharc.json
 
 # Standard Stuff Below
 

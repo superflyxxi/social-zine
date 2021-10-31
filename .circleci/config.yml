@@ -45,7 +45,7 @@ commands:
             sshpass -e ssh ${SSH_USER}@${SSH_SERVER} -p ${SSH_PORT} "${SSH_DOCKER_COMPOSE_REMOTE_DIR}/<< parameters.command >>"
 
 jobs:
-  unit-test:
+  build-js:
     resource_class: small
     executor: 
       name: node/default
@@ -55,37 +55,49 @@ jobs:
         description: The sub-project to work on.
         type: string
     steps:
+      - attach_workspace:
+          at: /tmp/workspace
       - checkout
-      - node/install-packages:
-          app-dir: ./<< parameters.project >>
+      - run:
+          name: install packages
+          command: |
+            cd common
+            npm ci
+            cd ../<< parameters.project >>
+            npm ci
       - run:
           name: Unit Tests
           working_directory: ./<< parameters.project >>
           environment:
-            MOCHA_FILE: ./mocha/test-results.xml
+            MOCHA_FILE: ./test-results.xml
             MOCHA_ARGS: --forbid-pending --forbid-only --reporter mocha-junit-reporter
           command: |
-            cp -v ../template/.c8rc.json ../template/.mocharc.json ./
+            cp -v ../.c8rc.json ../.mocharc.json ./
             npm test
       - run:
           name: Tar coverage
           command: tar -vcf << parameters.project >>-coverage.tar << parameters.project >>/coverage/
       - store_test_results:
-          path: ./<< parameters.project >>/mocha
-      - store_artifacts:
-          path: ./<< parameters.project >>/mocha/test-results.xml
+          path: ./<< parameters.project >>/test-results.xml
       - store_artifacts:
           path: ./<< parameters.project >>/coverage/
       - persist_to_workspace:
           root: ./
           paths:
             - ./*coverage.tar*
+
+  validate-format:
+    resource_class: small
+    executor: 
+      name: node/default
+      tag: '16.5.0'
+    steps:
+      - checkout
+      - node/install-packages
       - run:
           name: Verify XO
-          working_directory: ./<< parameters.project >>
           command: |
-            cp -v ../template/.prettierrc.json ../template/.xo-config.json ./
-            npm run xo-verify
+            find . -mindepth 1 -maxdepth 1 -type d | grep -v "\./\..*" | grep -v "\./node_modules" | xargs npm run xo -- 
 
   sonar-scan:
     executor: 
@@ -98,7 +110,16 @@ jobs:
       - run:
           name: Untar coverage
           command: |
-            tar -vxf ./*coverage.tar*
+            find ./ -maxdepth 1 -name '*coverage.tar*' -exec tar -vxf {} \;
+      - run:
+          name: Clean up Coverage
+          command: |
+            echo "Showing directories first"
+            find . -maxdepth 2 -name coverage -type d
+            echo "now running"
+            set -x
+            find . -maxdepth 2 -name coverage -type d | sed 's#\(.*\)/coverage#\1#g' | xargs -L1 -I{} sed -i 's#SF:#SF:{}/#g' {}/coverage/lcov.info
+            find . -name lcov.info -exec cat {} \;
       - run:
           name: Configure sonar-project.properties
           command: |
@@ -117,6 +138,13 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp/workspace
+      - run:
+          name: Load docker images
+          command: |
+            ls /tmp/workspace
+            if [[ -f /tmp/workspace/common-image.tar ]]; then
+              docker load -i /tmp/workspace/common-image.tar
+            fi
       - docker/check:
           registry: ${DOCKER_REGISTRY}
       - export-primary-docker-tag
@@ -145,6 +173,9 @@ jobs:
               done
               export DOCKER_TAGS="${DOCKER_TAGS},main,latest"
             fi
+            if [[ "common" != "<< parameters.project >>" ]]; then
+              echo "export COMMON_IMAGE=${DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/common:${PRIMARY_DOCKER_TAG}" >> ${BASH_ENV}
+            fi
             echo "export DOCKER_TAGS=${DOCKER_TAGS}" >> ${BASH_ENV}
             echo "export CACHE_FROM_IMAGES=${CACHE_FROM_IMAGES}" >> ${BASH_ENV}
             cat ${BASH_ENV}
@@ -156,6 +187,7 @@ jobs:
           registry: ${DOCKER_REGISTRY}
           tag: ${DOCKER_TAGS}
           cache_from: ${CACHE_FROM_IMAGES}
+          extra_build_args: --build-arg COMMON_IMAGE=${COMMON_IMAGE}
       - docker/push:
           step-name: Push application docker image
           image: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
@@ -186,10 +218,10 @@ jobs:
       - when:
           condition: << parameters.prerelease >>
           steps:
-            run:
-              name: Define additional args
-              command: |
-                echo "export ADDITIONAL_ARGS=--dry-run" >> ${BASH_ENV}
+            - run:
+                name: Define additional args
+                command: |
+                  echo "export ADDITIONAL_ARGS=--dry-run" >> ${BASH_ENV}
       - run:
           name: Run semantic-release
           command: |
@@ -208,6 +240,7 @@ jobs:
             - short_version.txt
 
   deploy:
+    executor: docker/machine
     parameters:
       project:
         description: The sub-project to work on.
@@ -217,8 +250,6 @@ jobs:
         type: enum
         default: "wip"
         enum: ["wip", "prod"]
-    machine:
-      enabled: true
     steps:
       - attach_workspace:
           at: /tmp/workspace
@@ -243,37 +274,31 @@ jobs:
 
   integration-test:
     executor: docker/machine
-    parameters:
-      project:
-        description: The sub-project to work on.
-        type: string
     steps:
       - attach_workspace:
           at: /tmp/workspace
       - export-primary-docker-tag
       - run:
-          name: Load docker image
-          command: docker load -i /tmp/workspace/<< parameters.project >>-image.tar
+          name: Load docker images
+          command: |
+            find /tmp/workspace -name '*-image.tar' -exec docker load -i {} \;
       - checkout
       - docker/build:
           step-name: Build integration testing docker image
-          docker-context: ./<< parameters.project >>
-          path: ./<< parameters.project >>
-          image: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
+          docker-context: ./int-test
+          path: ./int-test
+          image: ${CIRCLE_PROJECT_REPONAME}/int-test
           registry: ${DOCKER_REGISTRY}
-          tag: inttest-${PRIMARY_DOCKER_TAG}
-          dockerfile: int-test/Dockerfile
-          extra_build_args: --build-arg FROM_IMAGE=${DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:${PRIMARY_DOCKER_TAG}
+          tag: ${PRIMARY_DOCKER_TAG}
       - docker/check:
           registry: ${DOCKER_REGISTRY}
       - docker/push:
           step-name: Push integration testing docker image
-          image: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
+          image: ${CIRCLE_PROJECT_REPONAME}/int-test
           registry: ${DOCKER_REGISTRY}
-          tag: inttest-${PRIMARY_DOCKER_TAG}
+          tag: ${PRIMARY_DOCKER_TAG}
       - run:
           name: Generate docker-compose file
-          working_directory: ./<< parameters.project >>
           command: |
             cat int-test/docker-compose.yml |\
               sed "s#\${DOCKER_REGISTRY}#${DOCKER_REGISTRY}#g" |\
@@ -282,7 +307,6 @@ jobs:
             cat docker-compose.ci-test.yml
       - run:
           name: Bring up
-          working_directory: ./<< parameters.project >>
           command: |
             docker-compose -f docker-compose.ci-test.yml up --abort-on-container-exit --exit-code-from test
 
@@ -293,19 +317,34 @@ workflows:
           name: pre-release
           context: default
           prerelease: true
-      - unit-test:
+      - build-js:
           context: default
+          name: build-js-common
+          project: common
+      - build-js:
+          context: default
+          requires:
+            - build-js-common
           matrix:
             parameters:
               project: ["zine-generator"]
+      - validate-format:
+          context: default
       - sonar-scan:
           context: default
           requires:
-            - unit-test
+            - build-js
       - docker/hadolint:
           name: validate-dockerfiles
           context: default
-          dockerfiles: "template/Dockerfile"
+          dockerfiles: "common/Dockerfile:zine-generator/Dockerfile:template/Dockerfile"
+      - build-docker:
+          context: default
+          project: common
+          name: build-docker-common
+          requires:
+            - pre-release
+            - build-js-common
       - build-docker:
           context: default
           matrix:
@@ -313,7 +352,9 @@ workflows:
               project: ["zine-generator"]
           requires:
             - validate-dockerfiles
-            - unit-test
+            - build-js
+            - build-docker-common
+            - validate-format
             - pre-release
       - release:
           prerelease: false
@@ -324,36 +365,28 @@ workflows:
             branches:
               only:
                 - main
-      - deploy:
+      - integration-test:
           context: default
-          name: deploy-wip
-          env: wip
-          matrix:
-            parameters:
-              project: ["zine-generator"]
           requires:
             - build-docker
       - deploy:
           context: default
-          name: deploy-prod
-          env: prod
           matrix:
             parameters:
               project: ["zine-generator"]
+              env: ["wip"]
           requires:
             - build-docker
+      - deploy:
+          context: default
+          matrix:
+            parameters:
+              project: ["zine-generator"]
+              env: ["prod"]
+          requires:
+            - build-docker
+            - integration-test
           filters:
             branches:
               only:
-                - main
-      - integration-test:
-          context: default
-          matrix:
-            parameters:
-              project: ["zine-generator"]
-          requires:
-            - build-docker
-          filters:
-            branches:
-              ignore:
                 - main
