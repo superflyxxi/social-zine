@@ -23,7 +23,17 @@ describe('Rank Score Tests', function() {
 		]);
 	});
 
-	it('Rank single');
+	it('Rank single', async function() {
+		const res = await rank({
+			attr1: {
+				type: 'number',
+				scoreMethod: 'PREFER_HIGH',
+			}
+		}, ['attr1'], [{id: 1, attr1: 1}]);
+		assert.deepEqual(res, [
+			{score: 0, scoreBreakdown: {attr1: 0}},
+		]);
+	});
 
 	it('Rank multiple');
 
