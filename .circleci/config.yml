@@ -68,10 +68,13 @@ jobs:
 #            ls -lha /tmp/workspace || true
 #            ls -lha /tmp/workspace/common || true
 #            cp -v /tmp/workspace/superflyxxi-common*.tgz common/ || true
-      - node/install-packages:
-          app-dir: common/
-      - node/install-packages:
-          app-dir: ./<< parameters.project >>
+      - run:
+          name: install packages
+          command: |
+            cd common
+            npm ci
+            cd ../<< parameters.project >>
+            npm ci
       - run:
           name: Unit Tests
           working_directory: ./<< parameters.project >>
