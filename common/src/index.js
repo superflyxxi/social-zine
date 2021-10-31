@@ -1,7 +1,7 @@
 import process from 'node:process';
 import {v4 as uuidv4} from 'uuid';
 
-function errorHandler(error, req, res, next) {
+export function errorHandler(error, req, res, next) {
 	console.log('error encountered', error);
 	if (res.headersSent) {
 		return next(error);
@@ -18,7 +18,7 @@ function errorHandler(error, req, res, next) {
 	res.status(message.status).send(message);
 }
 
-class RootError extends Error {
+export class RootError extends Error {
 	constructor(type, title, status, detail) {
 		super(detail);
 		this.name = 'RootError';
@@ -29,4 +29,17 @@ class RootError extends Error {
 	}
 }
 
-export default {errorHandler, RootError}
+export class NotFoundError extends RootError {
+	constructor(detail) {
+		super('/errors/NOT_FOUND', 'Not Found', 404, detail);
+	}
+}
+
+export class RouteNotFoundError extends NotFoundError {
+	constructor(req) {
+		super(`${req.method} ${req.path} not a valid API.`);
+	}
+}
+
+// Export default {errorHandler, RootError, NotFoundError, RouteNotFoundError};
+>>>>>>> origin/main
