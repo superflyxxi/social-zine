@@ -135,8 +135,12 @@ jobs:
       - run:
           name: Clean up Coverage
           command: |
+            echo "Showing directories first"
+            find . -maxdepth 2 -name coverage -type d
+            echo "now running"
+            set -x
             find . -maxdepth 2 -name coverage -type d | sed 's#\(.*\)/coverage#\1#g' | xargs -L1 -I{} sed -i 's#SF:#SF:{}/#g' {}/coverage/lcov.info
-            find . name lcov.info -exec cat {} \;
+            find . -name lcov.info -exec cat {} \;
       - run:
           name: Configure sonar-project.properties
           command: |
