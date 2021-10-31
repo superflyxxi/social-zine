@@ -12,4 +12,4 @@ services:
       - zine-generator
     restart: "no"
     environment:
-      BASE_URL: "http://app:3000"
+      BASE_URL: "http://zine-generator:3000"
