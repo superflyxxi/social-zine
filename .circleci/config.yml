@@ -399,16 +399,12 @@ workflows:
               env: ["wip"]
           requires:
             - build-docker
-          filters:
-            branches:
-              ignore:
-                - main
       - deploy:
           context: default
           matrix:
             parameters:
               project: ["zine-generator"]
-              env: ["prod", "wip"]
+              env: ["prod"]
           requires:
             - build-docker
             - integration-test
