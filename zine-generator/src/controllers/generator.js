@@ -1,5 +1,5 @@
-import {rankRules} from '../config/index.js';
 import {validate} from '@superflyxxi/common';
+import {rankRules} from '../config/index.js';
 import rank from '../services/rank-score.js';
 
 export default async function generate(req, res) {
