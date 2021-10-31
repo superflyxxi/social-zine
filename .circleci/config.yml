@@ -69,7 +69,7 @@ jobs:
           name: Unit Tests
           working_directory: ./<< parameters.project >>
           environment:
-            MOCHA_FILE: ./mocha/test-results.xml
+            MOCHA_FILE: ./test-results.xml
           command: |
             cp -v ../.c8rc.json ../.mocharc.json ./
             npm test -- --forbid-pending --forbid-only --reporter mocha-junit-reporter
