@@ -246,5 +246,4 @@ describe('Basic Validation', function () {
 			}).to.throw(ValidationError);
 		});
 	});
-
 });
