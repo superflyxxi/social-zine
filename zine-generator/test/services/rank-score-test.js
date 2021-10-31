@@ -1,13 +1,13 @@
 import {strict as assert} from 'node:assert';
 import rank from '../../src/services/rank-score.js';
 
-describe('Rank Score Tests', () => {
-	it('Rank empty items', async () => {
+describe('Rank Score Tests', function() {
+	it('Rank empty items', async function() {
 		const res = await rank({}, [], []);
 		assert.deepEqual(res, []);
 	});
 
-	it('Rank no rules', async () => {
+	it('Rank no rules', async function() {
 		const res = await rank({}, ['attr1'], [{attr1: 1}, {attr1: 2}]);
 		assert.deepEqual(res, [
 			{score: 0, scoreBreakdown: {attr1: 0}},
@@ -15,33 +15,15 @@ describe('Rank Score Tests', () => {
 		]);
 	});
 
-	it('Rank empty ranklist', (done) => {
-		assert.fail('Missing tests');
-		done();
-	});
+	it('Rank empty ranklist');
 
-	it('Rank single', (done) => {
-		assert.fail('Missing tests');
-		done();
-	});
+	it('Rank single');
 
-	it('Rank multiple', (done) => {
-		assert.fail('Missing tests');
-		done();
-	});
+	it('Rank multiple');
 
-	it('Rank number', (done) => {
-		assert.fail('Missing tests');
-		done();
-	});
+	it('Rank number');
 
-	it('Rank version', (done) => {
-		assert.fail('Missing tests');
-		done();
-	});
+	it('Rank version');
 
-	it('Rank all types', (done) => {
-		assert.fail('Missing tests');
-		done();
-	});
+	it('Rank all types');
 });
