@@ -187,6 +187,9 @@ jobs:
               done
               export DOCKER_TAGS="${DOCKER_TAGS},main,latest"
             fi
+            if [[ "common" != "<< parameters.project >>" ]]; then
+              echo "export COMMON_IMAGE=${DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/common:${PRIMARY_DOCKER_TAG}" >> ${BASH_ENV}
+            fi
             echo "export DOCKER_TAGS=${DOCKER_TAGS}" >> ${BASH_ENV}
             echo "export CACHE_FROM_IMAGES=${CACHE_FROM_IMAGES}" >> ${BASH_ENV}
             cat ${BASH_ENV}
@@ -197,7 +200,8 @@ jobs:
           image: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
           registry: ${DOCKER_REGISTRY}
           tag: ${DOCKER_TAGS}
-          cache_from: ${CACHE_FROM_IMAGES}
+          cache_from: ${CACHE_FROM_IMAGE}
+          extra_build_args: --build-arg COMMON_IMAGE=${COMMON_IMAGE}
       - docker/push:
           step-name: Push application docker image
           image: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>

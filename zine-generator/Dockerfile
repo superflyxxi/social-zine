@@ -1,4 +1,5 @@
-FROM common
+ARG COMMON_IMAGE
+FROM ${COMMON_IMAGE}
 EXPOSE 3000
 COPY ./ /app/
 RUN cd /app && npm install
