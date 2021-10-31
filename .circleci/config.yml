@@ -349,7 +349,7 @@ workflows:
             - build-js-common
           matrix:
             parameters:
-              project: ["zine-generator", "template"]
+              project: ["zine-generator"]
       - validate-format:
           context: default
       - sonar-scan:
@@ -371,7 +371,7 @@ workflows:
           context: default
           matrix:
             parameters:
-              project: ["zine-generator", "template"]
+              project: ["zine-generator"]
           requires:
             - validate-dockerfiles
             - build-js
@@ -395,7 +395,7 @@ workflows:
           context: default
           matrix:
             parameters:
-              project: ["zine-generator", "template"]
+              project: ["zine-generator"]
               env: ["wip"]
           requires:
             - build-docker
@@ -407,7 +407,7 @@ workflows:
           context: default
           matrix:
             parameters:
-              project: ["zine-generator", "template"]
+              project: ["zine-generator"]
               env: ["prod", "wip"]
           requires:
             - build-docker
