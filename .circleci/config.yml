@@ -383,13 +383,17 @@ workflows:
                 - main
       - deploy:
           context: default
-          name: deploy-wip
           env: wip
           matrix:
             parameters:
               project: ["zine-generator", "template"]
+              env: ["wip"]
           requires:
             - build-docker
+          filters:
+            branches:
+              not:
+                - main
       - deploy:
           context: default
           name: deploy-prod
@@ -397,6 +401,7 @@ workflows:
           matrix:
             parameters:
               project: ["zine-generator", "template"]
+              env: ["prod", "wip"]
           requires:
             - build-docker
           filters:
