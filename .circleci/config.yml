@@ -380,9 +380,12 @@ workflows:
             branches:
               only:
                 - main
+      - integration-test:
+          context: default
+          requires:
+            - build-docker
       - deploy:
           context: default
-          env: wip
           matrix:
             parameters:
               project: ["zine-generator", "template"]
@@ -395,23 +398,14 @@ workflows:
                 - main
       - deploy:
           context: default
-          name: deploy-prod
-          env: prod
           matrix:
             parameters:
               project: ["zine-generator", "template"]
               env: ["prod", "wip"]
           requires:
             - build-docker
+            - integration-test
           filters:
             branches:
               only:
-                - main
-      - integration-test:
-          context: default
-          requires:
-            - build-docker
-          filters:
-            branches:
-              ignore:
                 - main
