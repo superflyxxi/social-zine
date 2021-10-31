@@ -24,9 +24,11 @@ describe('Basic Validation', function () {
 
 	describe('Sting Validations', function () {
 		it('String', function () {
-			validate(everything, {
-				s: {presence: false, type: 'string'},
-			});
+			expect(function () {
+				validate(everything, {
+					s: {presence: false, type: 'string'},
+				});
+			}).to.not.throw(ValidationError);
 		});
 		it('Bool', function () {
 			expect(function () {
@@ -69,42 +71,42 @@ describe('Basic Validation', function () {
 		it('String', function () {
 			expect(function () {
 				validate(everything, {
-					s: {presence: false, type: 'bool'},
+					s: {presence: false, inclusion: [true, false]},
 				});
 			}).to.throw(ValidationError);
 		});
 		it('Bool', function () {
 			expect(function () {
 				validate(everything, {
-					b: {presence: false, type: 'bool'},
+					b: {presence: false, inclusion: [true, false]},
 				});
-			}).to.throw(ValidationError);
+			}).to.not.throw(ValidationError);
 		});
 		it('Integer', function () {
 			expect(function () {
 				validate(everything, {
-					i: {presence: false, type: 'bool'},
+					i: {presence: false, inclusion: [true, false]},
 				});
 			}).to.throw(ValidationError);
 		});
 		it('Decimal', function () {
 			expect(function () {
 				validate(everything, {
-					d: {presence: false, type: 'bool'},
+					d: {presence: false, inclusion: [true, false]},
 				});
 			}).to.throw(ValidationError);
 		});
 		it('Array', function () {
 			expect(function () {
 				validate(everything, {
-					a: {presence: false, type: 'bool'},
+					a: {presence: false, inclusion: [true, false]},
 				});
 			}).to.throw(ValidationError);
 		});
 		it('Object', function () {
 			expect(function () {
 				validate(everything, {
-					o: {presence: false, type: 'bool'},
+					o: {presence: false, inclusion: [true, false]},
 				});
 			}).to.throw(ValidationError);
 		});
