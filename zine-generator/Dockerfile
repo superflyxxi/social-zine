@@ -7,6 +7,7 @@ ENV \
 WORKDIR /app
 ENTRYPOINT ["npm"]
 CMD ["start"]
-COPY package* /app/
-RUN npm install
-COPY src /app/src
+COPY common/ /common/
+RUN cd /common && npm install
+COPY zine-generator/ /app/
+RUN cd /app && npm install
