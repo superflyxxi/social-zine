@@ -71,42 +71,42 @@ describe('Basic Validation', function () {
 		it('String', function () {
 			expect(function () {
 				validate(everything, {
-					s: {presence: false, inclusion: [true, false]},
+					s: {presence: false, type: 'boolean'},
 				});
 			}).to.throw(ValidationError);
 		});
 		it('Bool', function () {
 			expect(function () {
 				validate(everything, {
-					b: {presence: false, inclusion: [true, false]},
+					b: {presence: false, type: 'boolean'},
 				});
 			}).to.not.throw(ValidationError);
 		});
 		it('Integer', function () {
 			expect(function () {
 				validate(everything, {
-					i: {presence: false, inclusion: [true, false]},
+					i: {presence: false, type: 'boolean'},
 				});
 			}).to.throw(ValidationError);
 		});
 		it('Decimal', function () {
 			expect(function () {
 				validate(everything, {
-					d: {presence: false, inclusion: [true, false]},
+					d: {presence: false, type: 'boolean'},
 				});
 			}).to.throw(ValidationError);
 		});
 		it('Array', function () {
 			expect(function () {
 				validate(everything, {
-					a: {presence: false, inclusion: [true, false]},
+					a: {presence: false, type: 'boolean'},
 				});
 			}).to.throw(ValidationError);
 		});
 		it('Object', function () {
 			expect(function () {
 				validate(everything, {
-					o: {presence: false, inclusion: [true, false]},
+					o: {presence: false, type: 'boolean'},
 				});
 			}).to.throw(ValidationError);
 		});
