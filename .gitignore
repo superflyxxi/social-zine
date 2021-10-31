@@ -1,7 +1,7 @@
 **/.c8rc.json
-!template/.c8rc.json
+!/.c8rc.json
 **/.mocharc.json
-!template/.mocharc.json
+!/.mocharc.json
 
 # Standard Stuff Below
 
