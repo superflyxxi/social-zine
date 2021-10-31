@@ -1,5 +1,5 @@
 import lodash from 'lodash';
-import * as versions from '../helpers/versions.js';
+import {getVersionObject} from '@superflyxxi/common';
 
 export default async function rank(rankRules, ranking, items) {
 	const itemScoreList = [];
@@ -65,7 +65,7 @@ function scoreBoolean(value, rankRule, rankScale) {
 }
 
 function scoreVersion(value, rankRule, rankScale) {
-	const version = versions.getVersionObject(value);
+	const version = getVersionObject(value);
 	const semantic = rankScale.semantic;
 	if (version[semantic] && rankRule.scoreMethod === 'PREFER_HIGH') {
 		return (version[semantic] - rankScale[semantic].min) * rankScale.multiplier;
@@ -134,7 +134,7 @@ function initScoreScaleForRank(rank, rankRule, itemScoreList) {
 						mapValues.values.push(value);
 						break;
 					case 'version':
-						version = versions.getVersionObject(value);
+						version = getVersionObject(value);
 						if (version?.major) mapValues.major.push(version.major);
 						if (version?.minor) mapValues.minor.push(version.minor);
 						if (version?.patch) mapValues.patch.push(version.patch);
