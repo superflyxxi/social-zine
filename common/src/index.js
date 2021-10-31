@@ -40,6 +40,3 @@ export class RouteNotFoundError extends NotFoundError {
 		super(`${req.method} ${req.path} not a valid API.`);
 	}
 }
-
-// Export default {errorHandler, RootError, NotFoundError, RouteNotFoundError};
->>>>>>> origin/main
