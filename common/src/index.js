@@ -40,3 +40,9 @@ export class RouteNotFoundError extends NotFoundError {
 		super(`${req.method} ${req.path} not a valid API.`);
 	}
 }
+
+export class ValidationError extends RootError {
+	constructor(result) {
+		super('/errors/VALIDATION_ERROR', 'Validation Error', 400, result);
+	}
+}
