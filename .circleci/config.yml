@@ -133,6 +133,12 @@ jobs:
           command: |
             find ./ -maxdepth 1 -name '*coverage.tar*' -exec tar -vxf {} \;
       - run:
+          name: Clean up Coverage
+          command: |
+            find . -maxdepth 2 -name coverage -type d | sed 's#\(.*\)/coverage#\1#g' | xargs -L1 -I{} sed -i 's#SF:#SF:{}/#g' {}/cover
+age/lcov.info
+            find . name lcov.info -exec echo "{}"; cat {}; \;
+      - run:
           name: Configure sonar-project.properties
           command: |
             printf "sonar.sources=%s\n" $(find . -maxdepth 2 -name src -type d | xargs echo | sed 's/ /,/g') >> sonar-project.properties
