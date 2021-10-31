@@ -27,7 +27,6 @@
 				]
 			}
 		],
-		"guard-for-in":["off"],
-		"import/no-anonymous-default-export": ["off"]
+		"guard-for-in":["off"]
 	}
 }
