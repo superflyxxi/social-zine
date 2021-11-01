@@ -1,5 +1,5 @@
 import lodash from 'lodash';
-import {getVersionObject, ValidationError} from '@superflyxxi/common';
+import {getVersionObject} from '@superflyxxi/common';
 
 export default async function rank(rankRules, ranking, items) {
 	const itemScoreList = [];
@@ -77,14 +77,14 @@ function scoreVersion(value, rankRule, rankScale) {
 async function getFinalScore(rankRules, rankScale, itemScore) {
 	itemScore.scoreBreakdown = {};
 	itemScore.score = 0;
-	// set identifiers
-	for (const attr in rankRules) {
-		if (rankRules[attr].type === 'identifier') {
-			itemScore[attr] = lodash.get(itemScore.item, attr);
+	// Set identifiers
+	for (const attribute in rankRules) {
+		if (rankRules[attribute].type === 'identifier') {
+			itemScore[attribute] = lodash.get(itemScore.item, attribute);
 		}
 	}
 
-	// set scores
+	// Set scores
 	for (const rank in rankScale) {
 		const value = lodash.get(itemScore.item, rank);
 		let score = 0;
