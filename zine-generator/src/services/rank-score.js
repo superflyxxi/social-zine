@@ -69,7 +69,9 @@ function scoreVersion(value, rankRule, rankScale) {
 	const semantic = rankScale.semantic;
 	if (version[semantic] && rankRule.scoreMethod === 'PREFER_HIGH') {
 		return (version[semantic] - rankScale[semantic].min) * rankScale.multiplier;
-	} else if (version[semantic] && rankRule.scoreMethod === 'PREFER_LOW') {
+	}
+
+	if (version[semantic] && rankRule.scoreMethod === 'PREFER_LOW') {
 		return (rankScale[semantic].max - version[semantic]) * rankScale.multiplier;
 	}
 
@@ -146,9 +148,9 @@ function initScoreScaleForRank(rank, rankRule, itemScoreList) {
 						break;
 					case 'version':
 						version = getVersionObject(value);
-						if (version?.major != null) mapValues.major.push(version.major);
-						if (version?.minor != null) mapValues.minor.push(version.minor);
-						if (version?.patch != null) mapValues.patch.push(version.patch);
+						if (version?.major !== null) mapValues.major.push(version.major);
+						if (version?.minor !== null) mapValues.minor.push(version.minor);
+						if (version?.patch !== null) mapValues.patch.push(version.patch);
 						break;
 					default:
 					// Should never get here

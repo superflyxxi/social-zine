@@ -159,6 +159,4 @@ describe('Rank Score Tests', function () {
 			]);
 		});
 	});
-
-	it('Rank all types');
 });
