@@ -1,5 +1,5 @@
 import {strict as assert} from 'node:assert';
-import rank from '../../src/services/rank-score.js';
+import rank from '../../src/services/rank.js';
 
 describe('Rank Score Tests', function () {
 	it('Rank empty items', async function () {
