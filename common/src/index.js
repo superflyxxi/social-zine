@@ -1,4 +1,5 @@
 import process from 'node:process';
+import fs from 'node:fs';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import express from 'express';
@@ -108,7 +109,7 @@ function getApiDocsRouter(title) {
 	const openapispec = swaggerJsdoc({
 		swaggerDefinition: {
 			openapi: '3.0.0',
-			info: {title, version: serverConfig.version}
+			info: {title, version: serverConfig.version},
 		},
 		apis: ['./src/routers/**/*.js', '../common/src/index.js'],
 	});
@@ -126,8 +127,8 @@ export const serverConfig = {
 function getVersionFromFile() {
 	try {
 		return fs.readFileSync('./src/version.txt', {encoding: 'utf-8'}).trim();
-	} catch (err) {
-		console.log(err);
+	} catch (error) {
+		console.log(error);
 		return undefined;
 	}
 }

@@ -1,5 +1,3 @@
-import fs from 'node:fs';
-
 export const rankRules = {
 	comments: {
 		type: 'number',
