@@ -5,7 +5,7 @@ import {createServer} from '../src/index.js';
 const {expect} = chai;
 chai.use(chaiHttp);
 
-const server = createServer('Title', '1.0.0', function (app) {
+const server = createServer('Title', function (app) {
 	app.get('/test1', function (req, res) {
 		res.send({
 			alright: true,
@@ -54,7 +54,6 @@ describe('Express path', function () {
 						openapi: '3.0.0',
 						info: {
 							title: 'Title',
-							version: '1.0.0',
 						},
 					});
 					done();

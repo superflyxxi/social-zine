@@ -1,11 +1,10 @@
 import express from 'express';
-import {createServer} from '@superflyxxi/common';
-import {server} from './config/index.js';
+import {serverConfig, createServer} from '@superflyxxi/common';
 
-const app = createServer('Template', server.version, function(server) {
+const app = createServer('Template', serverConfig.version, function(server) {
 // add your api to server here
 });
-	app.listen(server.port, () => {
-		console.log('Started', title, '(', server.version, ') listening on', server.port);
+	app.listen(serverConfig.port, function() {
+		console.log('Started serviceNameHere (', serverConfig.version, ') listening on', serverConfig.port);
 	});
 export default app;

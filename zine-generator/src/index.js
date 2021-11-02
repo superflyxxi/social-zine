@@ -1,8 +1,7 @@
-import {createServer} from '@superflyxxi/common';
-import {server} from './config/index.js';
+import {serverConfig, createServer} from '@superflyxxi/common';
 
-const app = createServer('Zines', server.version);
-app.listen(server.port, () => {
-	console.log('Started Zines (', server.version, ') listening on', server.port);
+const app = createServer('Zines');
+app.listen(serverConfig.port, function () {
+	console.log('Started Zines (', serverConfig.version, ') listening on', serverConfig.port);
 });
 export default app;

@@ -33,7 +33,6 @@ describe('Basic test', () => {
 					openapi: '3.0.0',
 					info: {
 						title: 'Zines',
-						version: '',
 					},
 				});
 				done();
