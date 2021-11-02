@@ -1,7 +1,40 @@
 import process from 'node:process';
+import swaggerUi from 'swagger-ui-express';
+import express from 'express';
+import swaggerJsdoc from 'swagger-jsdoc';
 import validatejs from 'validate.js';
 import {v4 as uuidv4} from 'uuid';
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Error:
+ *       type: object
+ *       properties:
+ *         type:
+ *           type: string
+ *           format: uri
+ *           description: The type of error that has occurred.
+ *           example: '/errors/SYSTEM_ERROR'
+ *         title:
+ *           type: string
+ *           description: A human readable title for the error.
+ *           example: System Error
+ *         status:
+ *           type: integer
+ *           description: The HTTP response status of this error.
+ *           example: 500
+ *         detail:
+ *           type: string
+ *           description: Some details about the error.
+ *           example: An unknown system error has occurred.
+ *         instance:
+ *           type: string
+ *           format: uuid
+ *           description: A unique identifier of this instance of the error.
+ *           example: 2c046e7d-8d71-4f4e-9d79-aef50777a9b3
+ */
 export function errorHandler(error, req, res, next) {
 	console.log('error encountered', error);
 	if (res.headersSent) {
@@ -66,4 +99,20 @@ export function getVersionObject(string) {
 	}
 
 	return {};
+}
+
+export function getApiDocsRouter(title, version) {
+	const apiDocs = express.Router();
+
+	const openapispec = swaggerJsdoc({
+		swaggerDefinition: {
+			openapi: '3.0.0',
+			info: {title, version},
+		},
+		apis: ['./src/routers/**/*.js', '../common/src/index.js'],
+	});
+
+	apiDocs.get('/json', (req, res) => res.send(openapispec));
+	apiDocs.use('/', swaggerUi.serve, swaggerUi.setup(openapispec));
+	return apiDocs;
 }

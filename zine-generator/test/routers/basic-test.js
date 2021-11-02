@@ -23,15 +23,6 @@ describe('Basic test', () => {
 				done();
 			});
 	});
-	it('API Docs', (done) => {
-		chai
-			.request(app)
-			.get('/api-docs/')
-			.end((error, res) => {
-				expect(res).to.have.status(200);
-				done();
-			});
-	});
 	it('API Docs JSON', (done) => {
 		chai
 			.request(app)
@@ -41,7 +32,7 @@ describe('Basic test', () => {
 				expect(res.body).to.deep.include({
 					openapi: '3.0.0',
 					info: {
-						title: 'Template',
+						title: 'Zine Generator',
 						version: '',
 					},
 				});
