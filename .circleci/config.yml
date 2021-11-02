@@ -326,7 +326,7 @@ workflows:
             - build-js-common
           matrix:
             parameters:
-              project: ["zine-generator"]
+              project: ["zine-generator", "posts"]
       - validate-format:
           context: default
       - sonar-scan:
@@ -336,7 +336,7 @@ workflows:
       - docker/hadolint:
           name: validate-dockerfiles
           context: default
-          dockerfiles: "common/Dockerfile:int-test/Dockerfile:template/Dockerfile:zine-generator/Dockerfile"
+          dockerfiles: "common/Dockerfile:int-test/Dockerfile:template/Dockerfile:zine-generator/Dockerfile:posts/Dockerfile"
       - build-docker:
           context: default
           project: common
@@ -348,7 +348,7 @@ workflows:
           context: default
           matrix:
             parameters:
-              project: ["zine-generator"]
+              project: ["zine-generator", "posts"]
           requires:
             - validate-dockerfiles
             - build-js
@@ -372,7 +372,7 @@ workflows:
           context: default
           matrix:
             parameters:
-              project: ["zine-generator"]
+              project: ["zine-generator", "posts"]
               env: ["wip"]
           requires:
             - build-docker
@@ -380,7 +380,7 @@ workflows:
           context: default
           matrix:
             parameters:
-              project: ["zine-generator"]
+              project: ["zine-generator", "posts"]
               env: ["prod"]
           requires:
             - build-docker
