@@ -116,3 +116,18 @@ export function getApiDocsRouter(title, version) {
 	apiDocs.use('/', swaggerUi.serve, swaggerUi.setup(openapispec));
 	return apiDocs;
 }
+
+export const serverConfig = {
+	port: 3000,
+	version: getVersionFromFile(),
+};
+
+function getVersionFromFile() {
+	try {
+		return fs.readFileSync('./src/version.txt', {encoding: 'utf-8'}).trim();
+	} catch (err) {
+		console.log(err);
+		return undefined;
+	}
+}
+
