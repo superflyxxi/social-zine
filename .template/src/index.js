@@ -1,23 +1,9 @@
-import express from 'express';
-import morgan from 'morgan';
-import {getApiDocsRouter, RouteNotFoundError, errorHandler} from '@superflyxxi/common';
-import {server} from './config/index.js';
+import {serverConfig, createServer} from '@superflyxxi/common';
 
-const app = express();
-app.use(express.json());
-app.disable('x-powered-by');
-app.use(morgan('short'));
-
-// APIs
-app.use('/api-docs', getApiDocsRouter('Title', server.version));
-
-// Errors
-app.use((req, res, next) => {
-	next(new RouteNotFoundError(req));
-});
-app.use(errorHandler);
-app.listen(server.port, () => {
-	console.log('Started version', server.version, 'listening on', server.port);
-});
-
-export default app;
+const app = createServer('Template', serverConfig.version, function(server) {
+// add your api to server here
+ });
+ 	app.listen(serverConfig.port, function() {
+ 			console.log('Started serviceNameHere (', serverConfig.version, ') listening on', serverConfig.port);
+ 				});
+ 				export default app;
