@@ -18,9 +18,7 @@
     "jsdom": "^17.0.0",
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
-    "node-cache": "^5.1.2",
-    "swagger-jsdoc": "^6.1.0",
-    "swagger-ui-express": "^4.1.6"
+    "node-cache": "^5.1.2"
   },
   "devDependencies": {
     "c8": "^7.9.0",
