@@ -1,15 +1,14 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import express from 'express';
 import {createServer} from '../src/index.js';
 
 const {expect} = chai;
 chai.use(chaiHttp);
 
-const server = createServer('Title', '1.0.0', function(app) {
-	app.get('/test1', function(req, res) {
+const server = createServer('Title', '1.0.0', function (app) {
+	app.get('/test1', function (req, res) {
 		res.send({
-			alright: true
+			alright: true,
 		});
 	});
 });
@@ -34,42 +33,42 @@ describe('Express path', function () {
 			.get('/something')
 			.end((error, res) => {
 				expect(res).to.have.status(404);
-		expect(res.body).to.deep.include({
-			type: '/errors/NOT_FOUND',
-			title: 'Not Found',
-			status: 404,
-			detail: 'GET /something not a valid API.',
-				});
-				done();
-			});
-	});
-
-describe('API Docs', function() {
-	it('Title and version', function (done) {
-		chai
-			.request(server)
-			.get('/api-docs/json')
-			.end((error, res) => {
-				expect(res).to.have.status(200);
 				expect(res.body).to.deep.include({
-					openapi: '3.0.0',
-					info: {
-						title: 'Title',
-						version: '1.0.0',
-					},
+					type: '/errors/NOT_FOUND',
+					title: 'Not Found',
+					status: 404,
+					detail: 'GET /something not a valid API.',
 				});
 				done();
 			});
 	});
 
-	it('HTML Swagger', function (done) {
-		chai
-			.request(server)
-			.get('/api-docs')
-			.end((error, res) => {
-				expect(res).to.have.status(200);
-				done();
-			});
+	describe('API Docs', function () {
+		it('Title and version', function (done) {
+			chai
+				.request(server)
+				.get('/api-docs/json')
+				.end((error, res) => {
+					expect(res).to.have.status(200);
+					expect(res.body).to.deep.include({
+						openapi: '3.0.0',
+						info: {
+							title: 'Title',
+							version: '1.0.0',
+						},
+					});
+					done();
+				});
+		});
+
+		it('HTML Swagger', function (done) {
+			chai
+				.request(server)
+				.get('/api-docs')
+				.end((error, res) => {
+					expect(res).to.have.status(200);
+					done();
+				});
+		});
 	});
-});
 });
