@@ -118,7 +118,7 @@ function getApiDocsRouter(title, version) {
 	return apiDocs;
 }
 
-export function startServer(port, title, version, fn) {
+export function startServer(port, title, version, function_) {
 	const app = express();
 	app.use(express.json());
 	app.disable('x-powered-by');
@@ -127,8 +127,8 @@ export function startServer(port, title, version, fn) {
 	// APIs Docs
 	app.use('/api-docs', getApiDocsRouter(title, version));
 
-	if (fn) {
-		fn(app);
+	if (function_) {
+		function_(app);
 	}
 
 	// Errors
@@ -137,7 +137,7 @@ export function startServer(port, title, version, fn) {
 	});
 	app.use(errorHandler);
 	app.listen(port, () => {
-		console.log('Started ', title, '(', version, ') listening on', port);
+		console.log('Started', title, '(', version, ') listening on', port);
 	});
 
 	return app;
