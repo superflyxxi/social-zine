@@ -1,4 +1,5 @@
 import process from 'node:process';
+import validatejs from 'validate.js';
 import {v4 as uuidv4} from 'uuid';
 
 export function errorHandler(error, req, res, next) {
@@ -41,4 +42,28 @@ export class RouteNotFoundError extends NotFoundError {
 	}
 }
 
-// Export default {errorHandler, RootError, NotFoundError, RouteNotFoundError};
+export class ValidationError extends RootError {
+	constructor(result) {
+		super('/errors/VALIDATION_ERROR', 'Validation Error', 400, result);
+	}
+}
+
+export function validate(object, constraints) {
+	const result = validatejs(object, constraints);
+	if (result) {
+		throw new ValidationError(result);
+	}
+}
+
+export function getVersionObject(string) {
+	if (string) {
+		const splt = string.split('.');
+		return {
+			major: splt[0] ? Number.parseInt(splt[0], 10) : undefined,
+			minor: splt[1] ? Number.parseInt(splt[1], 10) : undefined,
+			patch: splt[2] ? Number.parseInt(splt[2], 10) : undefined,
+		};
+	}
+
+	return {};
+}

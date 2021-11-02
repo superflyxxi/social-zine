@@ -70,10 +70,9 @@ jobs:
           working_directory: ./<< parameters.project >>
           environment:
             MOCHA_FILE: ./test-results.xml
-            MOCHA_ARGS: --forbid-pending --forbid-only --reporter mocha-junit-reporter
           command: |
             cp -v ../.c8rc.json ../.mocharc.json ./
-            npm test
+            npm test -- --forbid-pending --forbid-only --reporter mocha-junit-reporter
       - run:
           name: Tar coverage
           command: tar -vcf << parameters.project >>-coverage.tar << parameters.project >>/coverage/
@@ -337,7 +336,7 @@ workflows:
       - docker/hadolint:
           name: validate-dockerfiles
           context: default
-          dockerfiles: "common/Dockerfile:zine-generator/Dockerfile:template/Dockerfile"
+          dockerfiles: "common/Dockerfile:int-test/Dockerfile:template/Dockerfile:zine-generator/Dockerfile"
       - build-docker:
           context: default
           project: common
