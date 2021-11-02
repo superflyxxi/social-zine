@@ -4,7 +4,7 @@ import swaggerJsdoc from 'swagger-jsdoc';
 
 import {server} from '../config/index.js';
 
-const router = express.Router();
+const apiDocs = express.Router();
 
 const openapispec = swaggerJsdoc({
 	swaggerDefinition: {
@@ -17,7 +17,7 @@ const openapispec = swaggerJsdoc({
 	apis: ['./src/routers/**/*.js'],
 });
 
-router.get('/json', (req, res) => res.send(openapispec));
-router.use('/', swaggerUi.serve, swaggerUi.setup(openapispec));
+apiDocs.get('/json', (req, res) => res.send(openapispec));
+apiDocs.use('/', swaggerUi.serve, swaggerUi.setup(openapispec));
 
-export default router;
+export default apiDocs;
