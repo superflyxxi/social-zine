@@ -1,4 +1,7 @@
 import process from 'node:process';
+import swaggerUi from 'swagger-ui-express';
+import express from 'express';
+import swaggerJsdoc from 'swagger-jsdoc';
 import validatejs from 'validate.js';
 import {v4 as uuidv4} from 'uuid';
 
@@ -66,4 +69,20 @@ export function getVersionObject(string) {
 	}
 
 	return {};
+}
+
+export function getApiDocsRouter(title, version) {
+	const apiDocs = express.Router();
+
+	const openapispec = swaggerJsdoc({
+		swaggerDefinition: {
+			openapi: '3.0.0',
+			info: {title, version},
+		},
+		apis: ['./src/routers/**/*.js'],
+	});
+
+	apiDocs.get('/json', (req, res) => res.send(openapispec));
+	apiDocs.use('/', swaggerUi.serve, swaggerUi.setup(openapispec));
+	return apiDocs;
 }

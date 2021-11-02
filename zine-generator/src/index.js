@@ -1,7 +1,6 @@
 import express from 'express';
 import morgan from 'morgan';
-import {RouteNotFoundError, errorHandler} from '@superflyxxi/common';
-import apiDocsRouter from './routers/api-docs.js';
+import {getApiDocsRouter, RouteNotFoundError, errorHandler} from '@superflyxxi/common';
 import {server} from './config/index.js';
 
 const app = express();
@@ -10,7 +9,7 @@ app.disable('x-powered-by');
 app.use(morgan('short'));
 
 // APIs
-app.use('/api-docs', apiDocsRouter);
+app.use('/api-docs', getApiDocsRouter('Zine Generator', server.version));
 
 // Errors
 app.use((req, res, next) => {
