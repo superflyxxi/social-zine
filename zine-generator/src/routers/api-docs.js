@@ -2,7 +2,7 @@ import swaggerUi from 'swagger-ui-express';
 import express from 'express';
 import swaggerJsdoc from 'swagger-jsdoc';
 
-import {server} from '../../config/index.js';
+import {server} from '../config/index.js';
 
 const router = express.Router();
 

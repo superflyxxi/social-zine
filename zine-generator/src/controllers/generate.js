@@ -12,7 +12,7 @@ export default async function generate(req, res) {
 		endDate: {presence: false, type: 'datetime'},
 	});
 
-	const items = await axios.get(USER_POSTS_BASE_URL + '/v1/users/' + req.params.user + '/posts', {
+	const items = await axios.get(USER_POSTS_BASE_URL + '/v1/users/' + req.params.user_id + '/posts', {
 		params: {
 			startDate: req.body.startDate,
 			endDate: req.body.endDate,
