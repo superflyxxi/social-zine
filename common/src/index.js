@@ -36,7 +36,7 @@ import {v4 as uuidv4} from 'uuid';
  *           description: A unique identifier of this instance of the error.
  *           example: 2c046e7d-8d71-4f4e-9d79-aef50777a9b3
  */
-export function errorHandler(error, req, res, next) {
+function errorHandler(error, req, res, next) {
 	console.log('error encountered', error);
 	if (res.headersSent) {
 		return next(error);
@@ -118,7 +118,7 @@ function getApiDocsRouter(title, version) {
 	return apiDocs;
 }
 
-export function startApp(port, title, version, fn) {
+export function startServer(port, title, version, fn) {
 	const app = express();
 	app.use(express.json());
 	app.disable('x-powered-by');
