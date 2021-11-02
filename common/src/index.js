@@ -118,7 +118,7 @@ function getApiDocsRouter(title, version) {
 	return apiDocs;
 }
 
-export function startServer(port, title, version, function_) {
+export function createServer(port, title, version, function_) {
 	const app = express();
 	app.use(express.json());
 	app.disable('x-powered-by');
@@ -136,9 +136,5 @@ export function startServer(port, title, version, function_) {
 		next(new RouteNotFoundError(req));
 	});
 	app.use(errorHandler);
-	app.listen(port, () => {
-		console.log('Started', title, '(', version, ') listening on', port);
-	});
-
 	return app;
 }
