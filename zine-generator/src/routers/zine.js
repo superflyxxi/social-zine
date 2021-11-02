@@ -2,7 +2,7 @@ import express from 'express';
 import asyncHandler from 'express-async-handler';
 import generate from '../controllers/generate.js';
 
-const router = express.Router();
+const zine = express.Router();
 
 /**
  * @openapi
@@ -71,6 +71,6 @@ const router = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/v1/users/:user_id/zines', asyncHandler(generate));
+zine.get('/v1/users/:user_id/zines', asyncHandler(generate));
 
-export default router;
+export default zine;
