@@ -32,13 +32,13 @@ async function scoreAndSortItems(rankRules, itemScoreList, rankScale) {
 async function generateScoreScale(rankRules, rankList, itemScoreList) {
 	const scales = {};
 
-	for (const rank of rankList) {
-		scales[rank] = initScoreScaleForRank(rank, rankRules[rank], itemScoreList);
+	for (const r of rankList) {
+		scales[r] = initScoreScaleForRank(r, rankRules[r], itemScoreList);
 	}
 
 	let i = rankList.length;
-	for (const rank of rankList) {
-		populateScoreScaleForRank(scales[rank], 2 ** i--, rankRules[rank]);
+	for (const r of rankList) {
+		populateScoreScaleForRank(scales[r], 2 ** i--, rankRules[r]);
 	}
 
 	return scales;
@@ -89,37 +89,37 @@ async function getFinalScore(rankRules, rankScale, itemScore) {
 	}
 
 	// Set scores
-	for (const rank in rankScale) {
-		const value = lodash.get(itemScore.item, rank);
+	for (const r in rankScale) {
+		const value = lodash.get(itemScore.item, r);
 		let score = 0;
-		if (rankRules[rank]) {
-			switch (rankRules[rank].type) {
+		if (rankRules[r]) {
+			switch (rankRules[r].type) {
 				case 'number':
-					score = scoreNumber(value, rankRules[rank], rankScale[rank]);
+					score = scoreNumber(value, rankRules[r], rankScale[r]);
 					break;
 
 				case 'boolean':
-					score = scoreBoolean(value, rankRules[rank], rankScale[rank]);
+					score = scoreBoolean(value, rankRules[r], rankScale[r]);
 					break;
 
 				case 'version':
-					score = scoreVersion(value, rankRules[rank], rankScale[rank]);
+					score = scoreVersion(value, rankRules[r], rankScale[r]);
 					break;
 
 				default:
-					console.error('Invalid type configured: rank=', rank, 'type=', rankRules[rank].type);
+					console.error('Invalid type configured: rank=', r, 'type=', rankRules[r].type);
 					break;
 			}
 		}
 
-		itemScore.scoreBreakdown[rank] = score;
+		itemScore.scoreBreakdown[r] = score;
 		itemScore.score += score;
 	}
 
 	delete itemScore.item;
 }
 
-function initScoreScaleForRank(rank, rankRule, itemScoreList) {
+function initScoreScaleForRank(r, rankRule, itemScoreList) {
 	const result = {};
 	if (rankRule) {
 		const mapValues = {};
@@ -138,7 +138,7 @@ function initScoreScaleForRank(rank, rankRule, itemScoreList) {
 		}
 
 		for (const itemScore of itemScoreList) {
-			const value = lodash.get(itemScore.item, rank);
+			const value = lodash.get(itemScore.item, r);
 
 			if (value) {
 				let version;
