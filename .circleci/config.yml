@@ -239,7 +239,9 @@ jobs:
             - short_version.txt
 
   deploy:
-    executor: docker/machine
+    resource_class: small
+    docker:
+      - image: cimg/base:stable
     parameters:
       project:
         description: The sub-project to work on.
