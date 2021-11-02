@@ -1,4 +1,5 @@
 import process from 'node:process';
+import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import express from 'express';
 import swaggerJsdoc from 'swagger-jsdoc';
@@ -101,7 +102,7 @@ export function getVersionObject(string) {
 	return {};
 }
 
-export function getApiDocsRouter(title, version) {
+function getApiDocsRouter(title, version) {
 	const apiDocs = express.Router();
 
 	const openapispec = swaggerJsdoc({
@@ -115,4 +116,29 @@ export function getApiDocsRouter(title, version) {
 	apiDocs.get('/json', (req, res) => res.send(openapispec));
 	apiDocs.use('/', swaggerUi.serve, swaggerUi.setup(openapispec));
 	return apiDocs;
+}
+
+export function startApp(port, title, version, fn) {
+	const app = express();
+	app.use(express.json());
+	app.disable('x-powered-by');
+	app.use(morgan('short'));
+
+	// APIs Docs
+	app.use('/api-docs', getApiDocsRouter(title, version));
+
+	if (fn) {
+		fn(app);
+	}
+
+	// Errors
+	app.use((req, res, next) => {
+		next(new RouteNotFoundError(req));
+	});
+	app.use(errorHandler);
+	app.listen(port, () => {
+		console.log('Started ', title, '(', version, ') listening on', port);
+	});
+
+	return app;
 }
