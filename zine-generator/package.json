@@ -13,7 +13,8 @@
   "dependencies": {
     "@superflyxxi/common": "file:../common",
     "express": "^4.17.1",
-    "express-async-handler": "^1.1.4"
+    "express-async-handler": "^1.1.4",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "c8": "^7.9.0",
