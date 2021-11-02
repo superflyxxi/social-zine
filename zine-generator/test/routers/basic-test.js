@@ -41,7 +41,7 @@ describe('Basic test', () => {
 				expect(res.body).to.deep.include({
 					openapi: '3.0.0',
 					info: {
-						title: 'Template',
+						title: 'Zine Generator',
 						version: '',
 					},
 				});
