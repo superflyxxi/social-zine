@@ -118,7 +118,7 @@ function getApiDocsRouter(title, version) {
 	return apiDocs;
 }
 
-export function createServer(port, title, version, function_) {
+export function createServer(title, version, function_) {
 	const app = express();
 	app.use(express.json());
 	app.disable('x-powered-by');
