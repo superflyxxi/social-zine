@@ -1,4 +1,5 @@
 import process from 'node:process';
+import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import express from 'express';
 import swaggerJsdoc from 'swagger-jsdoc';
@@ -35,7 +36,7 @@ import {v4 as uuidv4} from 'uuid';
  *           description: A unique identifier of this instance of the error.
  *           example: 2c046e7d-8d71-4f4e-9d79-aef50777a9b3
  */
-export function errorHandler(error, req, res, next) {
+function errorHandler(error, req, res, next) {
 	console.log('error encountered', error);
 	if (res.headersSent) {
 		return next(error);
@@ -101,13 +102,13 @@ export function getVersionObject(string) {
 	return {};
 }
 
-export function getApiDocsRouter(title, version) {
+function getApiDocsRouter(title) {
 	const apiDocs = express.Router();
 
 	const openapispec = swaggerJsdoc({
 		swaggerDefinition: {
 			openapi: '3.0.0',
-			info: {title, version},
+			info: {title, version: serverConfig.version}
 		},
 		apis: ['./src/routers/**/*.js', '../common/src/index.js'],
 	});
@@ -131,3 +132,23 @@ function getVersionFromFile() {
 	}
 }
 
+export function createServer(title, function_) {
+	const app = express();
+	app.use(express.json());
+	app.disable('x-powered-by');
+	app.use(morgan('short'));
+
+	// APIs Docs
+	app.use('/api-docs', getApiDocsRouter(title));
+
+	if (function_) {
+		function_(app);
+	}
+
+	// Errors
+	app.use((req, res, next) => {
+		next(new RouteNotFoundError(req));
+	});
+	app.use(errorHandler);
+	return app;
+}
