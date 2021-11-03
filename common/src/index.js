@@ -128,7 +128,6 @@ function getVersionFromFile() {
 	try {
 		return fs.readFileSync('./src/version.txt', {encoding: 'utf-8'}).trim();
 	} catch (error) {
-		console.log(error);
 		return undefined;
 	}
 }
