@@ -127,7 +127,7 @@ export const serverConfig = {
 function getVersionFromFile() {
 	try {
 		return fs.readFileSync('./src/version.txt', {encoding: 'utf-8'}).trim();
-	} catch (error) {
+	} catch {
 		return undefined;
 	}
 }

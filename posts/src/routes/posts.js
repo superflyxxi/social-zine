@@ -4,5 +4,5 @@ import {getPosts} from '../controllers/posts.js';
 
 const router = express.Router();
 
-router.get('/', asyncHandler(controller.getPosts));
+router.get('/', asyncHandler(getPosts));
 export default router;
