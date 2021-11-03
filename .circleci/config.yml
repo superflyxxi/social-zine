@@ -238,7 +238,7 @@ jobs:
             - full_version.txt
             - short_version.txt
 
-  deploy:
+  deploy-docker-compose:
     resource_class: small
     docker:
       - image: cimg/base:stable
@@ -370,7 +370,7 @@ workflows:
           context: default
           requires:
             - build-docker
-      - deploy:
+      - deploy-docker-compose:
           context: default
           matrix:
             parameters:
@@ -378,7 +378,7 @@ workflows:
               env: ["wip"]
           requires:
             - build-docker
-      - deploy:
+      - deploy-docker-compose:
           context: default
           matrix:
             parameters:
