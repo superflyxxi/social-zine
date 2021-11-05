@@ -1,8 +1,12 @@
 import process from 'node:process';
-import {MongoClient} from 'mongodb';
+import mongoose from 'mongoose';
 
-// URI like mongodb://user:password@mongo:27017/
-const client = new MongoClient(process.env.MONGODB_URI);
-await client.connect();
-await client.db('social-zine');
-export default client;
+console.log('Final MONGODB_URI', process.env.MONGODB_URI);
+export async function connect() {
+	await mongoose.connect(process.env.MONGODB_URI);
+	return mongoose.connection;
+}
+
+export async function disconnect() {
+	return mongoose.disconnect();
+}
