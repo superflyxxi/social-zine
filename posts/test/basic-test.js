@@ -1,24 +1,17 @@
 import process from 'node:process';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import {MongoMemoryServer} from 'mongodb-memory-server';
-import app from '../src/index.js';
-import {connect as databaseConnect} from '../src/db/index.js';
-
 const {expect} = chai;
+import {MongoMemoryServer} from 'mongodb-memory-server';
 
 chai.use(chaiHttp);
-let mongoServer;
+
+const mongoServer = await MongoMemoryServer.create();
+process.env.MONGODB_URI = await mongoServer.getUri();
+
+const app = (await import('../src/index.js')).default;
 
 describe('Basic test', () => {
-	before(async function () {
-		// MongoServer = await MongoMemoryServer.create();
-		mongoServer = new MongoMemoryServer();
-		process.env.MONGODB_URI = await mongoServer.getUri();
-		console.log('Set MONGODB_URI=', process.env.MONGODB_URI);
-		console.log('Original', mongoServer.getUri());
-		databaseConnect();
-	});
 	after(async function () {
 		await mongoServer.stop();
 	});
