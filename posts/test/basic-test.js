@@ -1,8 +1,9 @@
 import process from 'node:process';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-const {expect} = chai;
 import {MongoMemoryServer} from 'mongodb-memory-server';
+
+const {expect} = chai;
 
 chai.use(chaiHttp);
 
