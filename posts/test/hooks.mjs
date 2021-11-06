@@ -1,7 +1,15 @@
 import process from 'node:process';
 import {MongoMemoryServer} from 'mongodb-memory-server';
+import mongoose from 'mongoose';
 
 let mongoServer;
+
+async function afterEach() {
+      for (let i in mongoose.connection.collections) {
+        mongoose.connection.collections[i].deleteMany(() => {})
+      }
+    }
+
 
 async function beforeAll() {
 	console.log('Starting up mongo');
@@ -14,4 +22,4 @@ async function afterAll() {
 	await mongoServer.stop();
 }
 
-export const mochaHooks = {afterAll, beforeAll};
+export const mochaHooks = {afterAll, beforeAll, afterEach};
