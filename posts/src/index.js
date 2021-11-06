@@ -1,8 +1,8 @@
 import {serverConfig, createServer} from '@superflyxxi/common';
-import {connect as databaseConnect} from './db/index.js';
+import {connect as connectDatabase} from './db/index.js';
 import route from './routes/posts.js';
 
-await databaseConnect();
+await connectDatabase();
 
 const app = createServer('Posts', function (server) {
 	server.use('/v1/posts', route);
