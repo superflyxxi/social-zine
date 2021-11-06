@@ -15,8 +15,10 @@ describe('Post tests', async () => {
 			.request(app)
 			.get('/v1/posts')
 			.end((error, res) => {
+				console.log('res.body(', res.body, ')');
 				expect(res).to.have.status(200);
-				expect(res.body).to.deep.include([]);
+				expect(res).to.be.json;
+				expect(res.body).to.deep.equal([]);
 				done();
 			});
 	});
