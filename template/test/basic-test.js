@@ -7,7 +7,7 @@ chai.use(chaiHttp);
 
 describe('Basic test', () => {
 	let app;
-	// ensures that app is loaded right before the test
+	// Ensures that app is loaded right before the test
 	before(async function () {
 		app = (await import('../src/index.js')).default;
 	});
