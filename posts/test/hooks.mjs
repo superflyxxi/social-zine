@@ -5,11 +5,10 @@ import mongoose from 'mongoose';
 let mongoServer;
 
 async function afterEach() {
-      for (let i in mongoose.connection.collections) {
-        mongoose.connection.collections[i].deleteMany(() => {})
-      }
-    }
-
+	for (const i in mongoose.connection.collections) {
+		mongoose.connection.collections[i].deleteMany(() => {});
+	}
+}
 
 async function beforeAll() {
 	console.log('Starting up mongo');
