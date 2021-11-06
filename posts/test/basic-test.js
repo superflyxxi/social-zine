@@ -1,20 +1,14 @@
-import process from 'node:process';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import {MongoMemoryServer} from 'mongodb-memory-server';
 
 const {expect} = chai;
 
 chai.use(chaiHttp);
 
-const mongoServer = await MongoMemoryServer.create();
-process.env.MONGODB_URI = await mongoServer.getUri();
-
-const app = (await import('../src/index.js')).default;
-
 describe('Basic test', () => {
-	after(async function () {
-		await mongoServer.stop();
+	let app;
+	before(async function () {
+		app = (await import('../src/index.js')).default;
 	});
 	it('Root', (done) => {
 		chai
