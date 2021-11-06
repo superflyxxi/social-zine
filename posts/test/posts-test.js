@@ -6,11 +6,15 @@ const {expect} = chai;
 chai.use(chaiHttp);
 
 describe('Post tests', async () => {
+	const post1 = {
+		date: new Date('2021-11-06T17:19:00'),
+		content: 'This is the first post',
+	};
 	let app;
 	before(async function () {
 		app = (await import('../src/index.js')).default;
 	});
-	it('List nothing', (done) => {
+	it('List nothing', function(done){
 		chai
 			.request(app)
 			.get('/v1/posts')
@@ -24,29 +28,47 @@ describe('Post tests', async () => {
 	});
 
 	it('Create one', function (done) {
-		const date = new Date();
 		chai
 			.request(app)
 			.post('/v1/posts')
-			.send({date, content: 'This is the post'})
+			.send(post1)
 			.end((error, res) => {
-				console.log('res.body(', res.body, ')');
 				expect(res).to.have.status(200);
 				// eslint-disable-next-line no-unused-expressions
 				expect(res).to.be.json;
 				expect(res.body).to.deep.include({
-					content: 'This is the post',
+					content: post1.content,
 					comments: [],
 					likes: [],
 				});
-				expect(new Date(res.body.date)).to.deep.equal(date);
+				expect(new Date(res.body.date)).to.deep.equal(post1.date);
 				// eslint-disable-next-line no-unused-expressions
 				expect(res.body._id).to.exist;
+				post1._id = res.body._id;
 				done();
 			});
 	});
 
-	it('Get list of one');
+	it('Get list of one', function(done) {
+		chai
+			.request(app)
+			.get('/v1/posts')
+			.end((error, res) => {
+				expect(res).to.have.status(200);
+				console.log('body', res.body);
+				// eslint-disable-next-line no-unused-expressions
+				expect(res).to.be.json;
+				expect(res.body).to.deep.include([
+					{
+						_id: post1._id,
+						content: post1.content,
+						comments: [],
+						likes: [],
+					}
+				]);
+				done();
+			});
+	});
 
 	it('Create second');
 
