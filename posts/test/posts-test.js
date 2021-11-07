@@ -14,7 +14,7 @@ describe('Post tests', async () => {
 	before(async function () {
 		app = (await import('../src/index.js')).default;
 	});
-	it('List nothing', function(done){
+	it('List nothing', function (done) {
 		chai
 			.request(app)
 			.get('/v1/posts')
@@ -49,7 +49,7 @@ describe('Post tests', async () => {
 			});
 	});
 
-	it('Get list of one', function(done) {
+	it('Get list of one', function (done) {
 		chai
 			.request(app)
 			.get('/v1/posts')
@@ -64,7 +64,7 @@ describe('Post tests', async () => {
 						content: post1.content,
 						comments: [],
 						likes: [],
-					}
+					},
 				]);
 				done();
 			});

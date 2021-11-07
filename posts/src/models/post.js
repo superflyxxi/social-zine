@@ -9,6 +9,10 @@ const {Schema} = mongoose;
  *     Post:
  *       type: object
  *       properties:
+ *         socialNetworkId:
+ *           type: string
+ *           description: The identifier of the social network.
+ *           example: fb
  *         date:
  *           type: string
  *           format: date-time
@@ -42,6 +46,15 @@ const {Schema} = mongoose;
  *         userId:
  *           type: string
  *           description: The user who made the comment.
+ *           example: b65e6be7-8817-4cd0-8b00-5e456e14c820
+ *
+ *     Like:
+ *       type: object
+ *       properties:
+ *         userId:
+ *           type: string
+ *           description: The user who like it.
+ *           example: b65e6be7-8817-4cd0-8b00-5e456e14c820
  */
 const schema = new Schema({
 	date: Date,
