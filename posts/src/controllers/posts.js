@@ -2,7 +2,7 @@ import Post from '../models/post.js';
 
 export async function listPosts(req, res) {
 	res.status(200);
-	res.json(await Post.find({}));
+	res.json(await Post.find());
 }
 
 export async function createPost(req, res) {
