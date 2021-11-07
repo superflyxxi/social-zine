@@ -1,5 +1,5 @@
-import Post from '../models/post.js';
 import {NotFoundError} from '@superflyxxi/common';
+import Post from '../models/post.js';
 
 export async function listPosts(req, res) {
 	res.json(await Post.find().select('-__v'));
@@ -11,6 +11,7 @@ export async function getPost(req, res) {
 	if (post === null) {
 		throw new NotFoundError(req.params.id);
 	}
+
 	res.json(post);
 	res.status(200);
 }
@@ -23,7 +24,7 @@ export async function createPost(req, res) {
 }
 
 export async function deletePost(req, res) {
-	await Post.deleteOne({ __id: req.params.id });
+	await Post.deleteOne({__id: req.params.id});
 	res.status(204);
 	res.send();
 }
