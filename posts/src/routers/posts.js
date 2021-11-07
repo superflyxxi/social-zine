@@ -2,7 +2,7 @@ import express from 'express';
 import asyncHandler from 'express-async-handler';
 import {listPosts, createPost, getPost, deletePost} from '../controllers/posts.js';
 
-const router = express.Router();
+const posts = express.Router();
 
 /**
  * @openapi
@@ -36,7 +36,7 @@ const router = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/', asyncHandler(listPosts));
+posts.get('/', asyncHandler(listPosts));
 
 /**
  * @openapi
@@ -74,10 +74,10 @@ router.get('/', asyncHandler(listPosts));
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/', asyncHandler(createPost));
+posts.post('/', asyncHandler(createPost));
 
-router.get('/:id', asyncHandler(getPost));
+posts.get('/:id', asyncHandler(getPost));
 
-router.delete('/:id', asyncHandler(deletePost));
+posts.delete('/:id', asyncHandler(deletePost));
 
-export default router;
+export default posts;
