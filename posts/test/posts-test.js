@@ -6,10 +6,6 @@ const {expect} = chai;
 chai.use(chaiHttp);
 
 describe('Post tests', async () => {
-	const post1 = {
-		date: new Date('2021-11-06T17:19:00'),
-		content: 'This is the first post',
-	};
 	let app;
 	before(async function () {
 		app = (await import('../src/index.js')).default;
@@ -27,56 +23,72 @@ describe('Post tests', async () => {
 			});
 	});
 
-	it('Create one', function (done) {
+	it('Get non-existent', function(done) {
+		chai
+			.request(app)
+			.get('/v1/posts/invalid')
+			.end((error, res) => {
+				expect(res).to.have.status(404);
+				// eslint-disable-next-line no-unused-expressions
+				expect(res).to.be.json;
+				expect(res.body).to.deep.include({
+					type: '/errors/NOT_FOUND',
+					title: 'Not Found',
+					status: res.status,
+					detail: 'GET /v1/posts/invalid not a valid API.',
+				});
+				done();
+			});
+	});
+
+	it('One: create, get, list, delete', function (done) {
+		const input = {
+			date: new Date('2021-11-06T17:19:00'),
+			content: 'This is the first post',
+		};
 		chai
 			.request(app)
 			.post('/v1/posts')
-			.send(post1)
+			.send(input)
 			.end((error, res) => {
 				expect(res).to.have.status(200);
 				// eslint-disable-next-line no-unused-expressions
 				expect(res).to.be.json;
 				expect(res.body).to.deep.include({
-					content: post1.content,
+					content: input.content,
 					comments: [],
 					likes: [],
 				});
-				expect(new Date(res.body.date)).to.deep.equal(post1.date);
+				expect(new Date(res.body.date)).to.deep.equal(input.date);
 				// eslint-disable-next-line no-unused-expressions
 				expect(res.body._id).to.exist;
-				post1._id = res.body._id;
-				done();
+				input._id = res.body._id;
+				chai
+					.request(app)
+					.get('/v1/posts')
+					.end((error, res) => {
+						expect(res).to.have.status(200);
+						console.log('body', res.body);
+						// eslint-disable-next-line no-unused-expressions
+						expect(res).to.be.json;
+						expect(res.body.length).to.deep.equal(1);
+						expect(res.body[0]).to.deep.include(
+							{
+								_id: input._id,
+								content: input.content,
+								comments: [],
+								likes: [],
+							},
+						);
+						done();
+					});
 			});
 	});
-
-	it('Get list of one', function (done) {
-		chai
-			.request(app)
-			.get('/v1/posts')
-			.end((error, res) => {
-				expect(res).to.have.status(200);
-				console.log('body', res.body);
-				// eslint-disable-next-line no-unused-expressions
-				expect(res).to.be.json;
-				expect(res.body).to.deep.include([
-					{
-						_id: post1._id,
-						content: post1.content,
-						comments: [],
-						likes: [],
-					},
-				]);
-				done();
-			});
-	});
-
-	it('Create second');
-
-	it('Get list of many');
 
 	it('Get individual');
-
 	it('Delete individual');
+	
+	it('Get list of many');
+	it('Create second');
 
-	it('Get non-existent');
 });
