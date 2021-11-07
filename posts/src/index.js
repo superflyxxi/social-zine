@@ -1,6 +1,6 @@
 import {serverConfig, createServer} from '@superflyxxi/common';
 import {connect as connectDatabase} from './db/index.js';
-import route from './routes/posts.js';
+import route from './routers/posts.js';
 
 await connectDatabase();
 
