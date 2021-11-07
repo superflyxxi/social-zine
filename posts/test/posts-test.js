@@ -96,7 +96,16 @@ describe('Post tests', async () => {
 									},
 								);
 								expect(new Date(res.body.date)).to.deep.equal(input.date);
-								done();
+								chai
+									.request(app)
+									.delete('/v1/posts/' + input._id)
+									.end((error, res) => {
+										expect(res).to.have.status(204);
+										console.log('body', res.body);
+										// eslint-disable-next-line no-unused-expressions
+										expect(res.body).to.deep.equal({});
+										done();
+									});
 							});
 					});
 			});

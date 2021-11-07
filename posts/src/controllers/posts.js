@@ -18,6 +18,12 @@ export async function getPost(req, res) {
 export async function createPost(req, res) {
 	const post = new Post(req.body);
 	await post.save();
+	res.json(post);
 	res.status(200);
-	res.send(post);
+}
+
+export async function deletePost(req, res) {
+	await Post.deleteOne({ __id: req.params.id });
+	res.status(204);
+	res.send();
 }

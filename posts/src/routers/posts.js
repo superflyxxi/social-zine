@@ -1,6 +1,6 @@
 import express from 'express';
 import asyncHandler from 'express-async-handler';
-import {listPosts, createPost, getPost} from '../controllers/posts.js';
+import {listPosts, createPost, getPost, deletePost} from '../controllers/posts.js';
 
 const router = express.Router();
 
@@ -77,5 +77,7 @@ router.get('/', asyncHandler(listPosts));
 router.post('/', asyncHandler(createPost));
 
 router.get('/:id', asyncHandler(getPost));
+
+router.delete('/:id', asyncHandler(deletePost));
 
 export default router;
