@@ -1,6 +1,6 @@
 import express from 'express';
 import asyncHandler from 'express-async-handler';
-import {listPosts, createPost} from '../controllers/posts.js';
+import {listPosts, createPost, getPost} from '../controllers/posts.js';
 
 const router = express.Router();
 
@@ -75,5 +75,7 @@ router.get('/', asyncHandler(listPosts));
  *               $ref: '#/components/schemas/Error'
  */
 router.post('/', asyncHandler(createPost));
+
+router.get('/:id', asyncHandler(getPost));
 
 export default router;

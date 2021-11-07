@@ -26,7 +26,7 @@ describe('Post tests', async () => {
 	it('Get non-existent', function(done) {
 		chai
 			.request(app)
-			.get('/v1/posts/invalid')
+			.get('/v1/posts/6188021ac86ae14801525def')
 			.end((error, res) => {
 				expect(res).to.have.status(404);
 				// eslint-disable-next-line no-unused-expressions
@@ -35,7 +35,7 @@ describe('Post tests', async () => {
 					type: '/errors/NOT_FOUND',
 					title: 'Not Found',
 					status: res.status,
-					detail: 'GET /v1/posts/invalid not a valid API.',
+					detail: '6188021ac86ae14801525def',
 				});
 				done();
 			});
@@ -68,7 +68,6 @@ describe('Post tests', async () => {
 					.get('/v1/posts')
 					.end((error, res) => {
 						expect(res).to.have.status(200);
-						console.log('body', res.body);
 						// eslint-disable-next-line no-unused-expressions
 						expect(res).to.be.json;
 						expect(res.body.length).to.deep.equal(1);
@@ -80,12 +79,29 @@ describe('Post tests', async () => {
 								likes: [],
 							},
 						);
-						done();
+						chai
+							.request(app)
+							.get('/v1/posts/' + input._id)
+							.end((error, res) => {
+								expect(res).to.have.status(200);
+								console.log('body', res.body);
+								// eslint-disable-next-line no-unused-expressions
+								expect(res).to.be.json;
+								expect(res.body).to.deep.include(
+									{
+										_id: input._id,
+										content: input.content,
+										comments: [],
+										likes: [],
+									},
+								);
+								expect(new Date(res.body.date)).to.deep.equal(input.date);
+								done();
+							});
 					});
 			});
 	});
 
-	it('Get individual');
 	it('Delete individual');
 	
 	it('Get list of many');
