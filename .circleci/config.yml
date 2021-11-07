@@ -122,8 +122,8 @@ jobs:
       - run:
           name: Configure sonar-project.properties
           command: |
-            printf "sonar.sources=%s\n" $(find . -maxdepth 2 -name src -type d | xargs echo | sed 's/ /,/g') >> sonar-project.properties
-            printf "sonar.tests=%s\n" $(find . -maxdepth 2 -name test -type d | xargs echo | sed 's/ /,/g') >> sonar-project.properties
+            printf "sonar.sources=%s\n" $(find . -maxdepth 2 -name src -type d | grep -v "template" | xargs echo | sed 's/ /,/g') >> sonar-project.properties
+            printf "sonar.tests=%s\n" $(find . -maxdepth 2 -name test -type d | grep -v "template" | xargs echo | sed 's/ /,/g') >> sonar-project.properties
             printf "sonar.javascript.lcov.reportPaths=%s\n" $(find . -name lcov.info -type f | xargs echo | sed 's/ /,/g') >> sonar-project.properties
             cat sonar-project.properties
       - sonarcloud/scan
