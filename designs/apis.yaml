@@ -32,8 +32,15 @@ components:
         reactions:
           type: array
           description: The likes for this Post.
+          default: []
           items:
             $ref: '#/components/schemas/Reaction'
+        comments:
+          type: array
+          description: All comments associated to this Post.
+          default: []
+          items:
+            $ref: '#/components/schemas/Comment'
     Reaction:
       type: object
       required:
@@ -47,6 +54,48 @@ components:
           enum:
             - like
           description: The type of Reaction
+          default: like
+    Comment:
+      type: object
+      required:
+        - content
+        - originator
+      properties:
+        content:
+          type: string
+          description: The content of the Comment.
+          example: Very good post.
+        originator:
+          type: string
+          description: The originator of the Comment.
+          example: 7349830
+  
+    Error:
+      type: object
+      description: The error details.
+      properties:
+        type:
+          type: string
+          format: uri
+          description: The type of the error.
+          example: '/errors/SYSTEM_ERROR'
+        title:
+          type: string
+          description: A human readable title for the error.
+          example: 'System Error'
+        status:
+          type: integer
+          description: The HTTP response status of this error.
+          example: 500
+        detail:
+          type: string
+          description: Some details about the error.
+          example: 'An unknown system error has occurred.'
+        instance:
+          type: string
+          format: uuid
+          description: A unique identifier of this instance of the error.
+          example: '2c046e7d-8d71-4f4e-9d79-aef50777a9b3'
   
   parameters:
     social-zine-user-id:
@@ -58,17 +107,75 @@ components:
       schema:
         type: string
 
+  responses:
+    invalid-user:
+      description: The SZ-User-Id is invalid.
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Error'
+              - example:
+                  type: '/errors/INVALID_USER'
+                  title: 'Invalid User'
+                  status: 403
+                  detail: 'User xyz is invalid.'
+
 paths:
   /posts:
+    parameters:
+      - $ref: '#/components/parameters/social-zine-user-id'
     get:
-      parameters:
-        - $ref: '#/components/parameters/social-zine-user-id'
       responses:
+        '403':
+          $ref: '#/components/responses/invalid-user'
         '200':
-          description: success
+          description: Posts listed
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Post'
+    post:
+      requestBody:
+        description: The Post to be created.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+      responses:
+        '403':
+          $ref: '#/components/responses/invalid-user'
+        '200':
+          description: Post created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+  '/posts/{id}':
+    parameters:
+      - $ref: '#/components/parameters/social-zine-user-id'
+      - name: id
+        in: path
+        description: The Post ID in question.
+        required: true
+        schema:
+          type: string
+          example: 7843943
+    get:
+      responses:
+        '403': 
+          $ref: '#/components/responses/invalid-user'
+        '200':
+          description: Post retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+    delete:
+      responses:
+        '403': 
+          $ref: '#/components/responses/invalid-user'
+        '204':
+          description: Post delete
