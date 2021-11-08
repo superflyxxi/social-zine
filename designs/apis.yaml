@@ -6,6 +6,23 @@ info:
 
 components:
   schemas:
+  
+    Settings:
+      type: object
+      properties:
+        frequency:
+          type: object
+          properties:
+            time:
+              type: integer
+              description: The amount of time.
+              example: 12
+            unit:
+              enum:
+                - hours
+              description: The time unit of measure.
+              example: hours
+              
     Zine:
       type: object
       properties:
@@ -145,12 +162,58 @@ components:
                   detail: 'User xyz is invalid.'
 
 paths:
+  '/v1/settings':
+    parameters:
+      - $ref: '#/components/parameters/social-zine-user-id'
+      - name: If-Modified-Since
+        in: header
+        description: Cache header to only return a new object if newer than this.
+        schema:
+          type: string
+          format: date-time
+    get:
+      tags:
+        - settings
+      responses:
+        '403':
+          $ref: '#/components/responses/invalid-user'
+        '200':
+          description: Gets settings
+          headers:
+            Last-Modified:
+              description: 'Date of when the settings was last updated.'
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+    patch:
+      tags:
+        - settings
+      requestBody:
+        description: Updates settings.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Settings'
+      responses:
+        '403':
+          $ref: '#/components/responses/invalid-user'
+        '200':
+          description: Updates settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+
   '/v1/zines':
     parameters:
       - $ref: '#/components/parameters/social-zine-user-id'
       - name: If-Modified-Since
         in: header
-        description: Cache header to only return a new zine of newer than this.
+        description: Cache header to only return a new object if newer than this.
         schema:
           type: string
           format: date-time
