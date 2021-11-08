@@ -6,6 +6,22 @@ info:
 
 components:
   schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          description: The user identifier.
+          type: string
+          format: uuid
+          example: 398490380
+        displayName:
+          type: string
+          description: The user's display name.
+          example: SuperFlyXXI
+        socialNetwork:
+          enum:
+            - fb
+          description: The social network this user belongs to.
   
     Settings:
       type: object
@@ -67,7 +83,8 @@ components:
           description: The date when the post occurred.
           example: '2021-11-08T13:46:00Z'
         socialNetwork:
-          type: string
+          enum:
+            - fb
           description: The social network identifier.
           example: fb
         content:
@@ -154,7 +171,21 @@ components:
       required: true
       schema:
         type: string
+    if-modified-since:
+      name: If-Modified-Since
+      in: header
+      description: Cache header to only return a new object if newer than this.
+      schema:
+        type: string
+        format: date-time
 
+  headers:
+    Last-Modified:
+      description: 'Date of when the object was last updated.'
+      schema:
+        type: string
+        format: date-time
+    
   responses:
     error:
       description: An error occurred.
@@ -164,15 +195,35 @@ components:
             $ref: '#/components/schemas/Error'
 
 paths:
+  '/v1/users/{id}':
+    parameters:
+      - $ref: '#/components/parameters/social-zine-user-id'
+      - $ref: '#/components/parameters/if-modified-since'
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - users
+      responses:
+        default:
+          $ref: '#/components/responses/error'
+        '200':
+          description: Gets user information
+          headers:
+            Last-Modified: 
+              $ref: '#/components/headers/Last-Modified'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
   '/v1/settings':
     parameters:
       - $ref: '#/components/parameters/social-zine-user-id'
-      - name: If-Modified-Since
-        in: header
-        description: Cache header to only return a new object if newer than this.
-        schema:
-          type: string
-          format: date-time
+      - $ref: '#/components/parameters/if-modified-since'
     get:
       tags:
         - settings
@@ -182,11 +233,8 @@ paths:
         '200':
           description: Gets settings
           headers:
-            Last-Modified:
-              description: 'Date of when the settings was last updated.'
-              schema:
-                type: string
-                format: date-time
+            Last-Modified: 
+              $ref: '#/components/headers/Last-Modified'
           content:
             application/json:
               schema:
@@ -213,26 +261,20 @@ paths:
   '/v1/zines':
     parameters:
       - $ref: '#/components/parameters/social-zine-user-id'
-      - name: If-Modified-Since
-        in: header
-        description: Cache header to only return a new object if newer than this.
-        schema:
-          type: string
-          format: date-time
+      - $ref: '#/components/parameters/if-modified-since'
     get:
       tags:
         - zine
       responses:
         default:
           $ref: '#/components/responses/error'
+        '304':
+          description: Not Modified
         '200':
           description: Gets latest zine
           headers:
-            Last-Modified:
-              description: 'Date of when the zine was last created.'
-              schema:
-                type: string
-                format: date-time
+            Last-Modified: 
+              $ref: '#/components/headers/Last-Modified'
           content:
             application/json:
               schema:
@@ -244,11 +286,16 @@ paths:
     get:
       tags:
         - post
+      parameters:
+        - $ref: '#/components/parameters/if-modified-since'
       responses:
         default:
           $ref: '#/components/responses/error'
         '200':
           description: Posts listed
+          headers:
+            Last-Modified: 
+              $ref: '#/components/headers/Last-Modified'
           content:
             application/json:
               schema:
@@ -276,6 +323,7 @@ paths:
   '/v1/posts/{id}':
     parameters:
       - $ref: '#/components/parameters/social-zine-user-id'
+      - $ref: '#/components/parameters/if-modified-since'
       - name: id
         in: path
         description: The Post ID in question.
@@ -291,6 +339,9 @@ paths:
           $ref: '#/components/responses/error'
         '200':
           description: Post retrieved
+          headers:
+            Last-Modified: 
+              $ref: '#/components/headers/Last-Modified'
           content:
             application/json:
               schema:
