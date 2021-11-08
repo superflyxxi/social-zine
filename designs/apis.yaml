@@ -156,18 +156,12 @@ components:
         type: string
 
   responses:
-    invalid-user:
-      description: The SZ-User-Id is invalid.
+    error:
+      description: An error occurred.
       content:
         application/json:
           schema:
-            allOf:
-              - $ref: '#/components/schemas/Error'
-              - example:
-                  type: '/errors/INVALID_USER'
-                  title: 'Invalid User'
-                  status: 403
-                  detail: 'User xyz is invalid.'
+            $ref: '#/components/schemas/Error'
 
 paths:
   '/v1/settings':
@@ -183,8 +177,8 @@ paths:
       tags:
         - settings
       responses:
-        '403':
-          $ref: '#/components/responses/invalid-user'
+        default:
+          $ref: '#/components/responses/error'
         '200':
           description: Gets settings
           headers:
@@ -207,8 +201,8 @@ paths:
             schema:
               $ref: '#/components/schemas/Settings'
       responses:
-        '403':
-          $ref: '#/components/responses/invalid-user'
+        default:
+          $ref: '#/components/responses/error'
         '200':
           description: Updates settings
           content:
@@ -229,8 +223,8 @@ paths:
       tags:
         - zine
       responses:
-        '403':
-          $ref: '#/components/responses/invalid-user'
+        default:
+          $ref: '#/components/responses/error'
         '200':
           description: Gets latest zine
           headers:
@@ -251,8 +245,8 @@ paths:
       tags:
         - post
       responses:
-        '403':
-          $ref: '#/components/responses/invalid-user'
+        default:
+          $ref: '#/components/responses/error'
         '200':
           description: Posts listed
           content:
@@ -271,8 +265,8 @@ paths:
             schema:
               $ref: '#/components/schemas/Post'
       responses:
-        '403':
-          $ref: '#/components/responses/invalid-user'
+        default:
+          $ref: '#/components/responses/error'
         '200':
           description: Post created
           content:
@@ -293,8 +287,8 @@ paths:
       tags:
         - post
       responses:
-        '403': 
-          $ref: '#/components/responses/invalid-user'
+        default:
+          $ref: '#/components/responses/error'
         '200':
           description: Post retrieved
           content:
@@ -305,7 +299,7 @@ paths:
       tags:
         - post
       responses:
-        '403': 
-          $ref: '#/components/responses/invalid-user'
+        default:
+          $ref: '#/components/responses/error'
         '204':
           description: Post delete
