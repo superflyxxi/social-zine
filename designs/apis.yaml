@@ -22,6 +22,14 @@ components:
                 - hours
               description: The time unit of measure.
               example: hours
+        ranking:
+          type: array
+          example: ["postDate", "comments", "likes"]
+          items:
+            enum:
+              - comments
+              - likes
+              - postDate
               
     Zine:
       type: object
