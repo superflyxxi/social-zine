@@ -4,12 +4,19 @@ info:
   description: Social Zine RESTful APIs
   version: 0.0.0
 
-
 components:
   schemas:
     Post:
       type: object
+      required:
+        - socialNetwork
+        - content
+        - originator
       properties:
+        _id:
+          type: string
+          description: The Post identifier.
+          example: 37947398
         socialNetwork:
           type: string
           description: The social network identifier.
@@ -17,6 +24,30 @@ components:
         content:
           type: string
           description: The content of the post.
+          example: This is the first post I ever created.
+        originator:
+          type: string
+          description: The ID of the originator of the post.
+          example: 123897493
+        reactions:
+          type: array
+          description: The likes for this Post.
+          items:
+            $ref: '#/components/schemas/Reaction'
+    Reaction:
+      type: object
+      required:
+        - originator
+      properties:
+        originator:
+          type: string
+          description: The ID of the originator of the Reaction.
+          example: 17893893
+        type:
+          enum:
+            - like
+          description: The type of Reaction
+  
   parameters:
     social-zine-user-id:
       name: SZ-User-Id
