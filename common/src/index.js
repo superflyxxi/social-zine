@@ -111,7 +111,7 @@ function getApiDocsRouter(title) {
 			openapi: '3.0.0',
 			info: {title, version: serverConfig.version},
 		},
-		apis: ['./src/routers/**/*.js', '../common/src/index.js'],
+		apis: ['./src/routers/**/*.js', './src/models/**/*.js', '../common/src/index.js'],
 	});
 
 	apiDocs.get('/json', (req, res) => res.send(openapispec));
@@ -127,8 +127,7 @@ export const serverConfig = {
 function getVersionFromFile() {
 	try {
 		return fs.readFileSync('./src/version.txt', {encoding: 'utf-8'}).trim();
-	} catch (error) {
-		console.log(error);
+	} catch {
 		return undefined;
 	}
 }

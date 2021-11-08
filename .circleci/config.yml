@@ -32,7 +32,7 @@ commands:
       - run:
           name: Upload << parameters.file >>
           command: |
-            sshpass -e scp -P ${SSH_PORT} << parameters.file >> ${SSH_USER}@${SSH_SERVER}:${SSH_DOCKER_COMPOSE_REMOTE_DIR}/<< parameters.service >>
+            sshpass -e scp -o "StrictHostKeyChecking no" -P ${SSH_PORT} << parameters.file >> ${SSH_USER}@${SSH_SERVER}:${SSH_DOCKER_COMPOSE_REMOTE_DIR}/<< parameters.service >>
   execute-remote:
     parameters:
       command:
@@ -122,8 +122,8 @@ jobs:
       - run:
           name: Configure sonar-project.properties
           command: |
-            printf "sonar.sources=%s\n" $(find . -maxdepth 2 -name src -type d | xargs echo | sed 's/ /,/g') >> sonar-project.properties
-            printf "sonar.tests=%s\n" $(find . -maxdepth 2 -name test -type d | xargs echo | sed 's/ /,/g') >> sonar-project.properties
+            printf "sonar.sources=%s\n" $(find . -maxdepth 2 -name src -type d | grep -v "template" | xargs echo | sed 's/ /,/g') >> sonar-project.properties
+            printf "sonar.tests=%s\n" $(find . -maxdepth 2 -name test -type d | grep -v "template" | xargs echo | sed 's/ /,/g') >> sonar-project.properties
             printf "sonar.javascript.lcov.reportPaths=%s\n" $(find . -name lcov.info -type f | xargs echo | sed 's/ /,/g') >> sonar-project.properties
             cat sonar-project.properties
       - sonarcloud/scan
@@ -238,8 +238,10 @@ jobs:
             - full_version.txt
             - short_version.txt
 
-  deploy:
-    executor: docker/machine
+  deploy-docker-compose:
+    resource_class: small
+    docker:
+      - image: cimg/base:stable
     parameters:
       project:
         description: The sub-project to work on.
@@ -326,7 +328,7 @@ workflows:
             - build-js-common
           matrix:
             parameters:
-              project: ["zine-generator"]
+              project: ["zine-generator", "posts"]
       - validate-format:
           context: default
       - sonar-scan:
@@ -336,7 +338,7 @@ workflows:
       - docker/hadolint:
           name: validate-dockerfiles
           context: default
-          dockerfiles: "common/Dockerfile:int-test/Dockerfile:.template/Dockerfile:zine-generator/Dockerfile"
+          dockerfiles: "common/Dockerfile:int-test/Dockerfile:template/Dockerfile:zine-generator/Dockerfile:posts/Dockerfile"
       - build-docker:
           context: default
           project: common
@@ -348,7 +350,7 @@ workflows:
           context: default
           matrix:
             parameters:
-              project: ["zine-generator"]
+              project: ["zine-generator", "posts"]
           requires:
             - validate-dockerfiles
             - build-js
@@ -368,19 +370,19 @@ workflows:
           context: default
           requires:
             - build-docker
-      - deploy:
+      - deploy-docker-compose:
           context: default
           matrix:
             parameters:
-              project: ["zine-generator"]
+              project: ["zine-generator", "posts"]
               env: ["wip"]
           requires:
             - build-docker
-      - deploy:
+      - deploy-docker-compose:
           context: default
           matrix:
             parameters:
-              project: ["zine-generator"]
+              project: ["zine-generator", "posts"]
               env: ["prod"]
           requires:
             - build-docker

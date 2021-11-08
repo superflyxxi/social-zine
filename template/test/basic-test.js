@@ -1,12 +1,16 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import app from '../src/index.js';
 
 const {expect} = chai;
 
 chai.use(chaiHttp);
 
 describe('Basic test', () => {
+	let app;
+	// Ensures that app is loaded right before the test
+	before(async function () {
+		app = (await import('../src/index.js')).default;
+	});
 	it('Root', (done) => {
 		chai
 			.request(app)
