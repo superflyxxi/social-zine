@@ -6,6 +6,12 @@ info:
 
 components:
   schemas:
+    Zine:
+      type: object
+      properties:
+        publishedDate:
+          type: string
+            
     Post:
       type: object
       required:
@@ -17,6 +23,11 @@ components:
           type: string
           description: The Post identifier.
           example: 37947398
+        date:
+          type: string
+          format: date-time
+          description: The date when the post occurred.
+          example: '2021-11-08T13:46:00Z'
         socialNetwork:
           type: string
           description: The social network identifier.
@@ -122,10 +133,28 @@ components:
                   detail: 'User xyz is invalid.'
 
 paths:
-  /posts:
+  '/v1/zines':
     parameters:
       - $ref: '#/components/parameters/social-zine-user-id'
     get:
+      tags:
+        - zine
+      responses:
+        '403':
+          $ref: '#/components/responses/invalid-user'
+        '200':
+          description: Gets latest zine
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Zine'
+  
+  '/v1/posts':
+    parameters:
+      - $ref: '#/components/parameters/social-zine-user-id'
+    get:
+      tags:
+        - post
       responses:
         '403':
           $ref: '#/components/responses/invalid-user'
@@ -138,6 +167,8 @@ paths:
                 items:
                   $ref: '#/components/schemas/Post'
     post:
+      tags:
+        - post
       requestBody:
         description: The Post to be created.
         content:
@@ -153,7 +184,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Post'
-  '/posts/{id}':
+  '/v1/posts/{id}':
     parameters:
       - $ref: '#/components/parameters/social-zine-user-id'
       - name: id
@@ -164,6 +195,8 @@ paths:
           type: string
           example: 7843943
     get:
+      tags:
+        - post
       responses:
         '403': 
           $ref: '#/components/responses/invalid-user'
@@ -174,6 +207,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Post'
     delete:
+      tags:
+        - post
       responses:
         '403': 
           $ref: '#/components/responses/invalid-user'
