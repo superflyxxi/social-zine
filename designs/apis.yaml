@@ -175,6 +175,7 @@ components:
       name: If-Modified-Since
       in: header
       description: Cache header to only return a new object if newer than this.
+      example: 'Wed, 21 Oct 2015 07:28:00 GMT'
       schema:
         type: string
         format: date-time
@@ -182,6 +183,7 @@ components:
   headers:
     Last-Modified:
       description: 'Date of when the object was last updated.'
+      example: 'Wed, 21 Oct 2015 07:28:00 GMT'
       schema:
         type: string
         format: date-time
