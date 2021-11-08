@@ -9,9 +9,22 @@ components:
     Zine:
       type: object
       properties:
-        publishedDate:
+        date:
           type: string
-            
+          format: date-time
+          description: The date and time when this was published.
+          example: '2021-11-08T17:00:00Z'
+        posts:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Post'
+              - properties:
+                  score:
+                    type: number
+                    description: The score given to this post.
+                    example: 100
+
     Post:
       type: object
       required:
@@ -43,15 +56,14 @@ components:
         reactions:
           type: array
           description: The likes for this Post.
-          default: []
           items:
             $ref: '#/components/schemas/Reaction'
         comments:
           type: array
           description: All comments associated to this Post.
-          default: []
           items:
             $ref: '#/components/schemas/Comment'
+
     Reaction:
       type: object
       required:
@@ -136,6 +148,12 @@ paths:
   '/v1/zines':
     parameters:
       - $ref: '#/components/parameters/social-zine-user-id'
+      - name: If-Modified-Since
+        in: header
+        description: Cache header to only return a new zine of newer than this.
+        schema:
+          type: string
+          format: date-time
     get:
       tags:
         - zine
@@ -144,6 +162,12 @@ paths:
           $ref: '#/components/responses/invalid-user'
         '200':
           description: Gets latest zine
+          headers:
+            Last-Modified:
+              description: 'Date of when the zine was last created.'
+              schema:
+                type: string
+                format: date-time
           content:
             application/json:
               schema:
