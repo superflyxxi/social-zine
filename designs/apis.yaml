@@ -19,9 +19,14 @@ components:
           description: The user's display name.
           example: SuperFlyXXI
         socialNetwork:
+          type: string
           enum:
             - fb
-          description: The social network this user belongs to.
+          description: >
+            The social network identifier. Possible values:
+             - fb
+             - twtr
+          example: fb
   
     Settings:
       type: object
@@ -34,14 +39,18 @@ components:
               description: The amount of time.
               example: 12
             unit:
+              type: string
               enum:
                 - hours
-              description: The time unit of measure.
+              description: >
+                The time unit of measure. Possible values:
+                - hours
               example: hours
         ranking:
           type: array
           example: ["postDate", "comments", "likes"]
           items:
+            type: string
             enum:
               - comments
               - likes
@@ -120,9 +129,12 @@ components:
           description: The ID of the originator of the Reaction.
           example: 17893893
         type:
+          type: string
           enum:
             - like
-          description: The type of Reaction
+          description: >
+            The type of Reaction. Possible values
+            - like
           default: like
     Comment:
       type: object
