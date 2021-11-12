@@ -83,9 +83,13 @@ components:
           description: The date when the post occurred.
           example: '2021-11-08T13:46:00Z'
         socialNetwork:
+          type: string
           enum:
             - fb
-          description: The social network identifier.
+          description: >
+            The social network identifier. Possible values:
+             - fb
+             - twtr
           example: fb
         content:
           type: string
