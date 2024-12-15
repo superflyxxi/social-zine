@@ -328,8 +328,6 @@ workflows:
           context: default
           name: build-js-common
           project: common
-          requires:
-            - validate-format
       - build-js:
           context: default
           requires:
@@ -354,7 +352,6 @@ workflows:
           requires:
             - pre-release
             - build-js-common
-            - validate-dockerfiles
             - pre-release
       - build-docker:
           context: default
@@ -362,10 +359,8 @@ workflows:
             parameters:
               project: ["zine-generator", "posts"]
           requires:
-            - validate-dockerfiles
             - build-js
             - build-docker-common
-            - validate-format
       - release:
           prerelease: false
           context: default
