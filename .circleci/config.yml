@@ -131,12 +131,25 @@ jobs:
       - sonarcloud/scan
 
   build-docker:
-    executor: docker/machine
     parameters:
       project:
         description: The sub-project to work on.
         type: string
+    docker:
+      - image: cimg/base:stable
     steps:
+      - when:
+          condition:
+            equal: [main, << pipeline.git.branch >>]
+          steps:
+          - setup_remote_docker:
+              docker_layer_caching: false
+      - unless:
+          condition:
+            equal: [main, << pipeline.git.branch >>]
+          steps:
+          - setup_remote_docker:
+              docker_layer_caching: true
       - attach_workspace:
           at: /tmp/workspace
       - run:
@@ -146,10 +159,6 @@ jobs:
             if [[ -f /tmp/workspace/common-image.tar ]]; then
               docker load -i /tmp/workspace/common-image.tar
             fi
-      - docker/check:
-          registry: ${PRIVATE_DOCKER_REGISTRY}
-          docker-password: PRIVATE_DOCKER_PASSWORD
-          docker-username: PRIVATE_DOCKER_USERNAME
       - export-primary-docker-tag
       - checkout
       - run: 
@@ -161,17 +170,11 @@ jobs:
           name: Custom enviroment variables
           working_directory: ./<< parameters.project >>
           command: |
-            export CACHE_FROM_IMAGES=$(grep "^FROM " Dockerfile | sed 's/FROM //g')
-            if [[ "<< pipeline.git.branch >>" != "main" ]]; then
-              export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:latest"
-            fi
-
             export DOCKER_TAGS=${PRIMARY_DOCKER_TAG}
             if [[ "main" == "<< pipeline.git.branch >>" ]] && [[ "main" != "${PRIMARY_DOCKER_TAG}" ]]; then
               for A in $(echo ${PRIMARY_DOCKER_TAG} | tr "." "\n"); do 
                 NOW="$PREV.$A"
                 export DOCKER_TAGS="${DOCKER_TAGS},${NOW:1}"
-                export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:${NOW:1}"
                 PREV=$NOW
               done
               export DOCKER_TAGS="${DOCKER_TAGS},main,latest"
@@ -180,7 +183,6 @@ jobs:
               echo "export COMMON_IMAGE=${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/common:${PRIMARY_DOCKER_TAG}" >> ${BASH_ENV}
             fi
             echo "export DOCKER_TAGS=${DOCKER_TAGS}" >> ${BASH_ENV}
-            echo "export CACHE_FROM_IMAGES=${CACHE_FROM_IMAGES}" >> ${BASH_ENV}
             cat ${BASH_ENV}
       - docker/build:
           step-name: Build application docker image
@@ -189,13 +191,7 @@ jobs:
           image: ${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
           registry: ${PRIVATE_DOCKER_REGISTRY}
           tag: ${DOCKER_TAGS}
-          cache_from: ${CACHE_FROM_IMAGES}
           extra_build_args: --build-arg COMMON_IMAGE=${COMMON_IMAGE}
-      - docker/push:
-          step-name: Push application docker image
-          image: ${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
-          registry: ${PRIVATE_DOCKER_REGISTRY}
-          tag: ${DOCKER_TAGS}
       - run:
           name: Save docker image
           command: docker save -o << parameters.project >>-image.tar ${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:${PRIMARY_DOCKER_TAG}
@@ -277,8 +273,11 @@ jobs:
           command: ci-deploy.sh ${CIRCLE_PROJECT_REPONAME}-<< parameters.project >>-<< parameters.env >>
 
   integration-test:
-    executor: docker/machine
+    docker:
+      - image: cimg/base:stable
     steps:
+      - setup_remote_docker:
+          docker_layer_caching: false
       - attach_workspace:
           at: /tmp/workspace
       - export-primary-docker-tag
@@ -304,17 +303,47 @@ jobs:
           registry: ${PRIVATE_DOCKER_REGISTRY}
           tag: ${PRIMARY_DOCKER_TAG}
       - run:
-          name: Generate docker-compose file
-          command: |
-            cat int-test/docker-compose.yml |\
-              sed "s#\${PRIVATE_DOCKER_REGISTRY}#${PRIVATE_DOCKER_REGISTRY}#g" |\
-              sed "s#\${PRIMARY_DOCKER_TAG}#${PRIMARY_DOCKER_TAG}#g" \
-              > docker-compose.ci-test.yml
-            cat docker-compose.ci-test.yml
-      - run:
           name: Bring up
           command: |
-            docker-compose -f docker-compose.ci-test.yml up --abort-on-container-exit --exit-code-from test
+            docker compose -f int-test/docker-compose.yml up --abort-on-container-exit --exit-code-from test
+
+  publish-docker:
+    executor: docker/machine
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - docker/check:
+          registry: ${PRIVATE_DOCKER_REGISTRY}
+          docker-password: PRIVATE_DOCKER_PASSWORD
+          docker-username: PRIVATE_DOCKER_USERNAME
+      - run:
+          name: Load docker images
+          command: |
+            find /tmp/workspace -name '*-image.tar' -exec docker load -i {} \;
+      - export-primary-docker-tag
+      - run:
+          name: Export DOCKER_TAGS
+          command: |
+            export DOCKER_TAGS=${PRIMARY_DOCKER_TAG}
+            if [[ "main" == "<< pipeline.git.branch >>" ]] && [[ "main" != "${PRIMARY_DOCKER_TAG}" ]]; then
+              for A in $(echo ${PRIMARY_DOCKER_TAG} | tr "." "\n"); do 
+                NOW="$PREV.$A"
+                export DOCKER_TAGS="${DOCKER_TAGS},${NOW:1}"
+                PREV=$NOW
+              done
+              export DOCKER_TAGS="${DOCKER_TAGS},main,latest"
+            fi
+            echo "export DOCKER_TAGS=${DOCKER_TAGS}" >> ${BASH_ENV}
+      - docker/push:
+          step-name: Push posts
+          image: ${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/posts
+          registry: ${PRIVATE_DOCKER_REGISTRY}
+          tag: ${DOCKER_TAGS}
+      - docker/push:
+          step-name: Push zine-generator
+          image: ${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/zine-generator
+          registry: ${PRIVATE_DOCKER_REGISTRY}
+          tag: ${DOCKER_TAGS}
 
 workflows:
   default:
@@ -377,6 +406,11 @@ workflows:
           context: default
           requires:
             - build-docker
+      - publish-docker:
+          name: publish-docker-private
+          context: default
+          requires:
+            - build-docker
       - deploy-docker-compose:
           context: default
           matrix:
@@ -387,7 +421,8 @@ workflows:
                 - zine-generator
                 - posts
           requires:
-            - build-docker
+            - publish-docker-private
+            - integration-test
           filters:
             branches:
               only:
@@ -402,7 +437,7 @@ workflows:
                 - zine-generator
                 - posts
           requires:
-            - build-docker
+            - publish-docker-private
             - integration-test
           filters:
             branches:
