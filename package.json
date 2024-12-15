@@ -16,7 +16,7 @@
   "homepage": "https://github.com/superflyxxi/social-zine#readme",
   "devDependencies": {
     "@semantic-release/exec": "^6.0.3",
-    "semantic-release": "^18.0.0",
+    "semantic-release": "^24.2.0",
     "xo": "^0.46.3"
   }
 }
