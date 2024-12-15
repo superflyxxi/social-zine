@@ -323,6 +323,8 @@ workflows:
           context: default
           name: build-js-common
           project: common
+          requires:
+            - validate-format
       - build-js:
           context: default
           requires:
