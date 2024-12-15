@@ -47,6 +47,24 @@ updates:
     reviewers:
       - superflyxxi
   - package-ecosystem: "npm"
+    directory: "/posts"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "fix(posts): "
+      prefix-development: "fix(deps-dev): "
+    reviewers:
+      - superflyxxi
+  - package-ecosystem: "docker"
+    directory: "/posts"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "fix(posts): "
+      prefix-development: "fix(deps-dev): "
+    reviewers:
+      - superflyxxi
+  - package-ecosystem: "npm"
     directory: "/template"
     schedule:
       interval: "monthly"
