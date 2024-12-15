@@ -1,5 +1,11 @@
 version: 2.1
 
+variables:
+  node-version: &node-version '16.5.0'
+  node-executor: &node-executor
+    name: node/default
+    tag: *node-version
+  
 orbs:
   node: circleci/node@4
   docker: circleci/docker@1
@@ -47,9 +53,7 @@ commands:
 jobs:
   build-js:
     resource_class: small
-    executor: 
-      name: node/default
-      tag: '16.5.0'
+    executor: *node-executor 
     parameters:
       project:
         description: The sub-project to work on.
@@ -87,9 +91,7 @@ jobs:
 
   validate-format:
     resource_class: small
-    executor: 
-      name: node/default
-      tag: '16.5.0'
+    executor: *node-executor 
     steps:
       - checkout
       - node/install-packages
@@ -99,9 +101,7 @@ jobs:
             find . -mindepth 1 -maxdepth 1 -type d | grep -v "\./\..*" | grep -v "\./node_modules" | xargs npm run xo -- 
 
   sonar-scan:
-    executor: 
-      name: node/default
-      tag: '16.5.0'
+    executor: *node-executor
     steps:
       - checkout
       - attach_workspace:
@@ -202,8 +202,7 @@ jobs:
 
   release:
     resource_class: small
-    docker:
-      - image: circleci/node
+    executor: *node-executor 
     parameters:
       prerelease:
         description: Whether it's a pre-release and not actually release.
