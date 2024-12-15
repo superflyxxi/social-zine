@@ -9,7 +9,7 @@ variables:
 orbs:
   node: circleci/node@4
   docker: circleci/docker@2.8.1
-  sonarcloud: sonarsource/sonarcloud@1
+  sonarcloud: sonarsource/sonarcloud@2.0.0
 
 commands:
   export-primary-docker-tag:
