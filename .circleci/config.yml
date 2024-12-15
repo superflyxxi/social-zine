@@ -223,8 +223,10 @@ jobs:
                   echo "export ADDITIONAL_ARGS=--dry-run" >> ${BASH_ENV}
       - run:
           name: Run semantic-release
+          command: npx semantic-release ${ADDITIONAL_ARGS}
+      - run:
+          name: Capture version
           command: |
-            npx semantic-release ${ADDITIONAL_ARGS}
             if [[ "" == "$(cat version.txt)" ]]; then 
               printf "%s-%s" ${CIRCLE_BRANCH} ${CIRCLE_SHA1:0:7} | sed 's#/#-#g' > /tmp/workspace/full_version.txt
               printf "${CIRCLE_BRANCH}" | sed 's#/#-#g' > /tmp/workspace/short_version.txt
