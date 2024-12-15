@@ -347,6 +347,8 @@ workflows:
           requires:
             - pre-release
             - build-js-common
+            - validate-dockerfiles
+            - pre-release
       - build-docker:
           context: default
           matrix:
@@ -357,7 +359,6 @@ workflows:
             - build-js
             - build-docker-common
             - validate-format
-            - pre-release
       - release:
           prerelease: false
           context: default
