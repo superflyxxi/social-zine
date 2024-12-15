@@ -211,7 +211,7 @@ jobs:
         default: false
     steps:
       - checkout
-      - run: npm ci
+      - node/install-packages
       - attach_workspace:
           at: /tmp/workspace
       - when:
