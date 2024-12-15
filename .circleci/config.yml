@@ -166,7 +166,7 @@ jobs:
           command: |
             export CACHE_FROM_IMAGES=$(grep "^FROM " Dockerfile | sed 's/FROM //g')
             if [[ "<< pipeline.git.branch >>" != "main" ]]; then
-              export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${PRIVATE_DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:latest"
+              export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:latest"
             fi
 
             export DOCKER_TAGS=${PRIMARY_DOCKER_TAG}
@@ -174,13 +174,13 @@ jobs:
               for A in $(echo ${PRIMARY_DOCKER_TAG} | tr "." "\n"); do 
                 NOW="$PREV.$A"
                 export DOCKER_TAGS="${DOCKER_TAGS},${NOW:1}"
-                export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${PRIVATE_DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:${NOW:1}"
+                export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:${NOW:1}"
                 PREV=$NOW
               done
               export DOCKER_TAGS="${DOCKER_TAGS},main,latest"
             fi
             if [[ "common" != "<< parameters.project >>" ]]; then
-              echo "export COMMON_IMAGE=${PRIVATE_DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/common:${PRIMARY_DOCKER_TAG}" >> ${BASH_ENV}
+              echo "export COMMON_IMAGE=${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/common:${PRIMARY_DOCKER_TAG}" >> ${BASH_ENV}
             fi
             echo "export DOCKER_TAGS=${DOCKER_TAGS}" >> ${BASH_ENV}
             echo "export CACHE_FROM_IMAGES=${CACHE_FROM_IMAGES}" >> ${BASH_ENV}
@@ -189,19 +189,19 @@ jobs:
           step-name: Build application docker image
           docker-context: ./<< parameters.project >>
           path: ./<< parameters.project >>
-          image: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
+          image: ${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
           registry: ${PRIVATE_DOCKER_REGISTRY}
           tag: ${DOCKER_TAGS}
           cache_from: ${CACHE_FROM_IMAGES}
           extra_build_args: --build-arg COMMON_IMAGE=${COMMON_IMAGE}
       - docker/push:
           step-name: Push application docker image
-          image: ${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
+          image: ${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
           registry: ${PRIVATE_DOCKER_REGISTRY}
           tag: ${DOCKER_TAGS}
       - run:
           name: Save docker image
-          command: docker save -o << parameters.project >>-image.tar ${PRIVATE_DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:${PRIMARY_DOCKER_TAG}
+          command: docker save -o << parameters.project >>-image.tar ${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:${PRIMARY_DOCKER_TAG}
       - persist_to_workspace:
           root: ./
           paths:
@@ -294,14 +294,16 @@ jobs:
           step-name: Build integration testing docker image
           docker-context: ./int-test
           path: ./int-test
-          image: ${CIRCLE_PROJECT_REPONAME}/int-test
+          image: ${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/int-test
           registry: ${PRIVATE_DOCKER_REGISTRY}
           tag: ${PRIMARY_DOCKER_TAG}
       - docker/check:
           registry: ${PRIVATE_DOCKER_REGISTRY}
+          docker-password: PRIVATE_DOCKER_PASSWORD
+          docker-username: PRIVATE_DOCKER_USERNAME
       - docker/push:
           step-name: Push integration testing docker image
-          image: ${CIRCLE_PROJECT_REPONAME}/int-test
+          image: ${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/int-test
           registry: ${PRIVATE_DOCKER_REGISTRY}
           tag: ${PRIMARY_DOCKER_TAG}
       - run:
