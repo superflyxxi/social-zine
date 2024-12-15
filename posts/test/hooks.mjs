@@ -12,7 +12,7 @@ async function afterEach() {
 
 async function beforeAll() {
 	console.log('Starting up mongo');
-	mongoServer = await MongoMemoryServer.create();
+	mongoServer = await MongoMemoryServer.create({binary: {version: '8.0.4'}});
 	process.env.MONGODB_URI = await mongoServer.getUri();
 }
 

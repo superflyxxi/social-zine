@@ -65,6 +65,8 @@ jobs:
       project:
         description: The sub-project to work on.
         type: string
+    environment:
+      MONGOMS_DEBUG: false
     steps:
       - attach_workspace:
           at: /tmp/workspace
