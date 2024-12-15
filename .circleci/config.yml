@@ -194,7 +194,8 @@ jobs:
           extra_build_args: --build-arg COMMON_IMAGE=${COMMON_IMAGE}
       - run:
           name: Save docker image
-          command: docker save -o << parameters.project >>-image.tar ${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:${PRIMARY_DOCKER_TAG}
+          command: |
+            docker images --format '{{ .Repository }}:{{.Tag}}' | grep "<< parameters.project >>" | xargs docker save -o << parameters.project >>-image.tar
       - persist_to_workspace:
           root: ./
           paths:
@@ -334,6 +335,7 @@ jobs:
               export DOCKER_TAGS="${DOCKER_TAGS},main,latest"
             fi
             echo "export DOCKER_TAGS=${DOCKER_TAGS}" >> ${BASH_ENV}
+            echo "DOCKER_TAGS=${DOCKER_TAGS}"
       - docker/push:
           step-name: Push posts
           image: ${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/posts
