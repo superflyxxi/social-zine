@@ -389,6 +389,10 @@ workflows:
                 - posts
           requires:
             - build-docker
+          filters:
+            branches:
+              only:
+                - docker-compose
       - deploy-docker-compose:
           context: default
           matrix:
@@ -404,4 +408,4 @@ workflows:
           filters:
             branches:
               only:
-                - main
+                - docker-compose
