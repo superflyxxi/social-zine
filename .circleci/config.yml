@@ -8,7 +8,7 @@ variables:
   
 orbs:
   node: circleci/node@4
-  docker: circleci/docker@1
+  docker: circleci/docker@2.8.1
   sonarcloud: sonarsource/sonarcloud@1
 
 commands:
