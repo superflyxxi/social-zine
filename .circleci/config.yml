@@ -397,7 +397,7 @@ workflows:
           prerelease: false
           context: default
           requires:
-            - build-docker
+            - publish-docker-private
           filters:
             branches:
               only:
