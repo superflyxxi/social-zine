@@ -1,4 +1,4 @@
-FROM node:16.10.0-alpine3.11
+FROM node:22.12.0-alpine3.20
 ENV NODE_ENV=test
 ENTRYPOINT ["npm"]
 CMD ["test"]
