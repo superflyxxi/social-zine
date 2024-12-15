@@ -303,6 +303,7 @@ jobs:
           image: ${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/int-test
           registry: ${PRIVATE_DOCKER_REGISTRY}
           tag: ${PRIMARY_DOCKER_TAG}
+          extra_build_args: --build-arg NODE_VERSION=<< pipeline.parameters.node-version >>
       - docker/check:
           registry: ${PRIVATE_DOCKER_REGISTRY}
           docker-password: PRIVATE_DOCKER_PASSWORD
