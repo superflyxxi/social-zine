@@ -26,10 +26,8 @@ commands:
             - "SHA256:K1kowcyvmG5stCZAjRqwJCtFpJ+dpBIDP/sks1erWvk"
             - "SHA256:sAaBX0MwaNoPzbM9YwyWwwQQlKKK+8Ljb+kTzuPU2to"
       - run:
-          name: Install sshpass
+          name: Configure SSH Known Hosts
           command: |
-            sudo apt-get update
-            sudo apt-get install sshpass
             ssh-keyscan -p ${SSH_PORT} ${SSH_SERVER} >> ~/.ssh/known_hosts
   upload-file:
     parameters:
