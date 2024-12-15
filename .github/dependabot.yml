@@ -2,6 +2,7 @@ version: 2
 
 updates:
   - package-ecosystem: "npm"
+    open-pull-requests-limit: 1
     directory: "/"
     schedule:
       interval: "monthly"
@@ -11,6 +12,7 @@ updates:
     reviewers:
       - superflyxxi
   - package-ecosystem: "npm"
+    open-pull-requests-limit: 1
     directory: "/zine-generator"
     schedule:
       interval: "monthly"
@@ -20,6 +22,7 @@ updates:
     reviewers:
       - superflyxxi
   - package-ecosystem: "docker"
+    open-pull-requests-limit: 1
     directory: "/zine-generator"
     schedule:
       interval: "monthly"
@@ -29,6 +32,7 @@ updates:
     reviewers:
       - superflyxxi
   - package-ecosystem: "npm"
+    open-pull-requests-limit: 1
     directory: "/common"
     schedule:
       interval: "monthly"
@@ -38,6 +42,7 @@ updates:
     reviewers:
       - superflyxxi
   - package-ecosystem: "docker"
+    open-pull-requests-limit: 1
     directory: "/common"
     schedule:
       interval: "monthly"
@@ -47,6 +52,7 @@ updates:
     reviewers:
       - superflyxxi
   - package-ecosystem: "npm"
+    open-pull-requests-limit: 1
     directory: "/posts"
     schedule:
       interval: "monthly"
@@ -56,6 +62,7 @@ updates:
     reviewers:
       - superflyxxi
   - package-ecosystem: "docker"
+    open-pull-requests-limit: 1
     directory: "/posts"
     schedule:
       interval: "monthly"
@@ -65,6 +72,7 @@ updates:
     reviewers:
       - superflyxxi
   - package-ecosystem: "npm"
+    open-pull-requests-limit: 1
     directory: "/template"
     schedule:
       interval: "monthly"
@@ -74,6 +82,7 @@ updates:
     reviewers:
       - superflyxxi
   - package-ecosystem: "docker"
+    open-pull-requests-limit: 1
     directory: "/template"
     schedule:
       interval: "monthly"
