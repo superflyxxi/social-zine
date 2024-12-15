@@ -79,7 +79,7 @@ describe('Post tests', function () {
 									.request(app)
 									.delete('/v1/posts/' + input._id)
 									.end(function (error, res) {
-										expect(res).to.have.status(204);
+										expect(res, 'delete status').to.have.status(204);
 										console.log('body', res.body);
 
 										expect(res.body).to.deep.equal({});
@@ -87,7 +87,7 @@ describe('Post tests', function () {
 											.request(app)
 											.get('/v1/posts/' + input._id)
 											.end(function (error, res) {
-												expect(res).to.have.status(404);
+												expect(res, 'get after delete status').to.have.status(404);
 												// eslint-disable-next-line no-unused-expressions
 												expect(res).to.be.json;
 												expect(res.body).to.deep.include({
