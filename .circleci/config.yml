@@ -1,11 +1,16 @@
 version: 2.1
 
 variables:
-  node-version: &node-version '16.5.0'
+  node-version: &node-version '22.12.0'
   node-executor: &node-executor
     name: node/default
     tag: *node-version
-  
+
+parameters:
+    node-version:
+      type: string
+      default: *node-version
+
 orbs:
   node: circleci/node@4
   docker: circleci/docker@2.8.1
@@ -185,13 +190,13 @@ jobs:
             echo "export DOCKER_TAGS=${DOCKER_TAGS}" >> ${BASH_ENV}
             cat ${BASH_ENV}
       - docker/build:
-          step-name: Build application docker image
+          step-name: Build << parameters.project >> docker image
           docker-context: ./<< parameters.project >>
           path: ./<< parameters.project >>
           image: ${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
           registry: ${PRIVATE_DOCKER_REGISTRY}
           tag: ${DOCKER_TAGS}
-          extra_build_args: --build-arg COMMON_IMAGE=${COMMON_IMAGE}
+          extra_build_args: --build-arg COMMON_IMAGE=${COMMON_IMAGE} --build-arg NODE_VERSION=<< pipeline.parameters.node-version >>
       - run:
           name: Save docker image
           command: |

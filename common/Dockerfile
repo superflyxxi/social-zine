@@ -1,4 +1,5 @@
-FROM node:22.12.0-alpine3.20
+ARG NODE_VERSION
+FROM node:${NODE_VERSION}-alpine
 LABEL org.opencontainers.image.authors="SuperFlyXXI <superflyxxi@yahoo.com>"
 ENV NODE_ENV=production
 WORKDIR /app
