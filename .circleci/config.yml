@@ -146,8 +146,8 @@ jobs:
             fi
       - docker/check:
           registry: ${PRIVATE_DOCKER_REGISTRY}
-          docker-password: PRIVATE_DOCKER_USERNAME
-          docker-username: PRIVATE_DOCKER_PASSWORD
+          docker-password: PRIVATE_DOCKER_PASSWORD
+          docker-username: PRIVATE_DOCKER_USERNAME
       - export-primary-docker-tag
       - checkout
       - run: 
