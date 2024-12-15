@@ -43,7 +43,7 @@ commands:
       - run:
           name: Upload << parameters.file >>
           command: |
-            sshpass -e scp -o "StrictHostKeyChecking no" -P ${SSH_PORT} << parameters.file >> ${SSH_USER}@${SSH_SERVER}:${SSH_DOCKER_COMPOSE_REMOTE_DIR}/<< parameters.service >>
+            scp -P ${SSH_PORT} -v << parameters.file >> ${SSH_USER}@${SSH_SERVER}:${SSH_DOCKER_COMPOSE_REMOTE_DIR}/<< parameters.service >>
   execute-remote:
     parameters:
       command:
