@@ -52,8 +52,8 @@ updates:
     reviewers:
       - superflyxxi
   - package-ecosystem: "npm"
-    open-pull-requests-limit: 1
     directory: "/posts"
+    open-pull-requests-limit: 1
     schedule:
       interval: "monthly"
     commit-message:
@@ -62,7 +62,6 @@ updates:
     reviewers:
       - superflyxxi
   - package-ecosystem: "docker"
-    open-pull-requests-limit: 1
     directory: "/posts"
     schedule:
       interval: "monthly"
@@ -72,7 +71,6 @@ updates:
     reviewers:
       - superflyxxi
   - package-ecosystem: "npm"
-    open-pull-requests-limit: 1
     directory: "/template"
     schedule:
       interval: "monthly"
@@ -82,12 +80,29 @@ updates:
     reviewers:
       - superflyxxi
   - package-ecosystem: "docker"
-    open-pull-requests-limit: 1
     directory: "/template"
     schedule:
       interval: "monthly"
     commit-message:
       prefix: "fix(template): "
       prefix-development: "fix(deps-dev): "
+    reviewers:
+      - superflyxxi
+  - package-ecosystem: "npm"
+    directory: "/int-test"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "test: "
+      prefix-development: "test: "
+    reviewers:
+      - superflyxxi
+  - package-ecosystem: "docker"
+    directory: "/int-test"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "test: "
+      prefix-development: "test: "
     reviewers:
       - superflyxxi
