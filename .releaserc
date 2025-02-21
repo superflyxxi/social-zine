@@ -11,6 +11,7 @@
 				{"type":"test", "release":false},
 				{"scope":"ci", "release":false},
 				{"scope":"deps-dev", "release":false},
+				{"scope":"template", "release":false},
 				{"scope":"doc", "release":false}
 			],
 			"parserOpts": {
