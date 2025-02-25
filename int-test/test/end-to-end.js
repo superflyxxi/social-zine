@@ -12,8 +12,8 @@ chai.use(chaiAlmost(0.1));
 
 describe('End-to-end integration tests', () => {
 	it('Do it', (done) => {
-		chai
-			.request(BASE_URL)
+		chai.request
+			.execute(BASE_URL)
 			.put('/api')
 			.send({
 				input: true,
