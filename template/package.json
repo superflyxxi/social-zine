@@ -14,7 +14,7 @@
     "@superflyxxi/common": "file:../common",
     "express": "^4.17.1",
     "express-async-handler": "^1.2.0",
-    "mongoose": "^8.9.6"
+    "mongoose": "^8.13.2"
   },
   "devDependencies": {
     "c8": "^7.9.0",
