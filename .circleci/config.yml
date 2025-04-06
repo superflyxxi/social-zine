@@ -176,7 +176,9 @@ jobs:
       - run:
           name: Determine cache from images
           command: |
-            export CACHE_FROM_IMAGES="${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:latest"
+            export CACHE_APP=<< parameters.project >>
+            if [[ "${CACHE_APP}" == "common" ]]; then export CACHE_APP="posts"; fi
+            export CACHE_FROM_IMAGES="${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CACHE_APP}:latest"
             echo "export CACHE_FROM_IMAGES=${CACHE_FROM_IMAGES}" >> ${BASH_ENV}
             cat ${BASH_ENV}
       - run:
