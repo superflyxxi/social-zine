@@ -174,6 +174,29 @@ jobs:
           command: |
             cp -v /tmp/workspace/full_version.txt ./src/version.txt
       - run:
+          name: Determine cache from images
+          command: |
+            export CACHE_FROM_IMAGES=$(grep "^FROM " Dockerfile | sed 's/FROM //g')
+            if ! [[ "<< pipeline.git.branch >>" =~ (main|release-.*|dev) ]]; then
+              export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${CACHE_REGISTRY}/${CACHE_USERNAME}/${CIRCLE_PROJECT_REPONAME}:dev"
+            fi
+            if [[ "<< pipeline.git.branch >>" == "dev" ]]; then
+              export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${CACHE_REGISTRY}/${CACHE_USERNAME}/${CIRCLE_PROJECT_REPONAME}:latest"
+            fi
+
+            if [[ "main" == "<< pipeline.git.branch >>" ]] && [[ "main" != "${PRIMARY_DOCKER_TAG}" ]]; then
+              NOW=${PRIMARY_DOCKER_TAG:0:1}
+              echo "Handling TAG=${PRIMARY_DOCKER_TAG}"
+              for A in $(echo ${PRIMARY_DOCKER_TAG:1} | tr "." "\n"); do 
+                echo "Dealing with ${NOW}; ${PREV}"
+                export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${CACHE_REGISTRY}/${CACHE_USERNAME}/${CIRCLE_PROJECT_REPONAME}:${NOW}"
+                PREV=$NOW
+                NOW="$NOW.$A"
+              done
+            fi
+            echo "export CACHE_FROM_IMAGES=${CACHE_FROM_IMAGES}" >> ${BASH_ENV}
+            cat ${BASH_ENV}
+      - run:
           name: Custom enviroment variables
           working_directory: ./<< parameters.project >>
           command: |
@@ -191,6 +214,13 @@ jobs:
             fi
             echo "export DOCKER_TAGS=${DOCKER_TAGS}" >> ${BASH_ENV}
             cat ${BASH_ENV}
+      - run:
+          name: Docker pull cache images
+          command: |
+            for I in $(echo ${CACHE_FROM_IMAGES} | tr "," "\n"); do
+              echo "Pulling $I"
+              docker pull $I
+            done
       - docker/build:
           step-name: Build << parameters.project >> docker image
           docker-context: ./<< parameters.project >>
@@ -199,6 +229,7 @@ jobs:
           registry: ${PRIVATE_DOCKER_REGISTRY}
           tag: ${DOCKER_TAGS}
           extra_build_args: --build-arg COMMON_IMAGE=${COMMON_IMAGE} --build-arg NODE_VERSION=<< pipeline.parameters.node-version >>
+          cache_from: ${CACHE_FROM_IMAGES}
       - run:
           name: Save docker image
           command: |
