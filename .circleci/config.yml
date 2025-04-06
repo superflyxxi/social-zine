@@ -174,7 +174,7 @@ jobs:
           command: |
             cp -v /tmp/workspace/full_version.txt ./src/version.txt
       - run:
-          name: Custom enviroment variables
+          name: Determine Tag and Common Image Name
           working_directory: ./<< parameters.project >>
           command: |
             export DOCKER_TAGS=${PRIMARY_DOCKER_TAG}
@@ -191,6 +191,29 @@ jobs:
             fi
             echo "export DOCKER_TAGS=${DOCKER_TAGS}" >> ${BASH_ENV}
             cat ${BASH_ENV}
+      - run:
+          name: Determine cache from images
+          command: |
+            export CACHE_APP=<< parameters.project >>
+            if [[ "${CACHE_APP}" == "common" ]]; then export CACHE_APP="posts"; fi
+            if [[ "main" == "<< pipeline.git.branch >>" ]] && [[ "main" != "${PRIMARY_DOCKER_TAG}" ]]; then
+              export CACHE_FROM_IMAGES="${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CACHE_APP}:${PRIMARY_DOCKER_TAG:0:1}"
+            else
+              export CACHE_FROM_IMAGES="${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CACHE_APP}:main"
+            fi
+            echo "export CACHE_FROM_IMAGES=${CACHE_FROM_IMAGES}" >> ${BASH_ENV}
+            cat ${BASH_ENV}
+      - docker/check:
+          registry: ${PRIVATE_DOCKER_REGISTRY}
+          docker-password: PRIVATE_DOCKER_PASSWORD
+          docker-username: PRIVATE_DOCKER_USERNAME
+      - run:
+          name: Docker pull cache images
+          command: |
+            for I in $(echo ${CACHE_FROM_IMAGES} | tr "," "\n"); do
+              echo "Pulling $I"
+              docker pull $I || if [[ "main" == "<< pipeline.git.branch >>" ]]; then true; else false; fi
+            done
       - docker/build:
           step-name: Build << parameters.project >> docker image
           docker-context: ./<< parameters.project >>
@@ -199,10 +222,11 @@ jobs:
           registry: ${PRIVATE_DOCKER_REGISTRY}
           tag: ${DOCKER_TAGS}
           extra_build_args: --build-arg COMMON_IMAGE=${COMMON_IMAGE} --build-arg NODE_VERSION=<< pipeline.parameters.node-version >>
+          cache_from: ${CACHE_FROM_IMAGES}
       - run:
           name: Save docker image
           command: |
-            docker images --format '{{ .Repository }}:{{.Tag}}' | grep "<< parameters.project >>" | xargs docker save -o << parameters.project >>-image.tar
+            docker images --format '{{ .Repository }}:{{.Tag}}' | grep -v "<none>" | grep "<< parameters.project >>" | xargs docker save -o << parameters.project >>-image.tar
       - persist_to_workspace:
           root: ./
           paths:
