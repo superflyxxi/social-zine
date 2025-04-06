@@ -189,7 +189,7 @@ jobs:
               echo "Handling TAG=${PRIMARY_DOCKER_TAG}"
               for A in $(echo ${PRIMARY_DOCKER_TAG:1} | tr "." "\n"); do 
                 echo "Dealing with ${NOW}; ${PREV}"
-                export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${CACHE_REGISTRY}/${CACHE_USERNAME}/${CIRCLE_PROJECT_REPONAME}:${NOW}"
+                export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${PRIMARY_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME_USERNAME}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:${NOW}"
                 PREV=$NOW
                 NOW="$NOW.$A"
               done
@@ -197,7 +197,7 @@ jobs:
             echo "export CACHE_FROM_IMAGES=${CACHE_FROM_IMAGES}" >> ${BASH_ENV}
             cat ${BASH_ENV}
       - run:
-          name: Custom enviroment variables
+          name: Determine Tag and Common Image Name
           working_directory: ./<< parameters.project >>
           command: |
             export DOCKER_TAGS=${PRIMARY_DOCKER_TAG}
