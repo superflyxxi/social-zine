@@ -197,6 +197,10 @@ jobs:
             fi
             echo "export DOCKER_TAGS=${DOCKER_TAGS}" >> ${BASH_ENV}
             cat ${BASH_ENV}
+      - docker/check:
+          registry: ${PRIVATE_DOCKER_REGISTRY}
+          docker-password: PRIVATE_DOCKER_PASSWORD
+          docker-username: PRIVATE_DOCKER_USERNAME
       - run:
           name: Docker pull cache images
           command: |
