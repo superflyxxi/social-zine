@@ -174,14 +174,6 @@ jobs:
           command: |
             cp -v /tmp/workspace/full_version.txt ./src/version.txt
       - run:
-          name: Determine cache from images
-          command: |
-            export CACHE_APP=<< parameters.project >>
-            if [[ "${CACHE_APP}" == "common" ]]; then export CACHE_APP="posts"; fi
-            export CACHE_FROM_IMAGES="${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CACHE_APP}:latest"
-            echo "export CACHE_FROM_IMAGES=${CACHE_FROM_IMAGES}" >> ${BASH_ENV}
-            cat ${BASH_ENV}
-      - run:
           name: Determine Tag and Common Image Name
           working_directory: ./<< parameters.project >>
           command: |
@@ -198,6 +190,26 @@ jobs:
               echo "export COMMON_IMAGE=${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/common:${PRIMARY_DOCKER_TAG}" >> ${BASH_ENV}
             fi
             echo "export DOCKER_TAGS=${DOCKER_TAGS}" >> ${BASH_ENV}
+            cat ${BASH_ENV}
+      - run:
+          name: Determine cache from images
+          command: |
+            export CACHE_APP=<< parameters.project >>
+            if [[ "${CACHE_APP}" == "common" ]]; then export CACHE_APP="posts"; fi
+            if [[ "main" == "<< pipeline.git.branch >>" ]] && [[ "main" != "${PRIMARY_DOCKER_TAG}" ]]; then
+              NOW=${PRIMARY_DOCKER_TAG:0:1}
+              echo "Handling TAG=${PRIMARY_DOCKER_TAG}"
+              for A in $(echo ${PRIMARY_DOCKER_TAG:1} | tr "." "\n"); do 
+                echo "Dealing with ${NOW}; ${PREV}"
+                export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CACHE_APP}:${NOW}"
+                PREV=$NOW
+                NOW="$NOW.$A"
+              done
+              export CACHE_FROM_IMAGES=${CACHE_FROM_IMAGES:1}
+            else
+              export CACHE_FROM_IMAGES="${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CACHE_APP}:latest"
+            fi
+            echo "export CACHE_FROM_IMAGES=${CACHE_FROM_IMAGES}" >> ${BASH_ENV}
             cat ${BASH_ENV}
       - docker/check:
           registry: ${PRIVATE_DOCKER_REGISTRY}
