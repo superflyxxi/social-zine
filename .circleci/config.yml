@@ -196,11 +196,11 @@ jobs:
           command: |
             export CACHE_APP=<< parameters.project >>
             if [[ "${CACHE_APP}" == "common" ]]; then export CACHE_APP="posts"; fi
-            if [[ "main" == "<< pipeline.git.branch >>" ]]; then
+            #if [[ "main" == "<< pipeline.git.branch >>" ]]; then
               export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CACHE_APP}:${PRIMARY_DOCKER_TAG:0:1}"
-            else
-              export CACHE_FROM_IMAGES="${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CACHE_APP}:latest"
-            fi
+            #else
+            #  export CACHE_FROM_IMAGES="${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CACHE_APP}:latest"
+            #fi
             echo "export CACHE_FROM_IMAGES=${CACHE_FROM_IMAGES}" >> ${BASH_ENV}
             cat ${BASH_ENV}
       - docker/check:
