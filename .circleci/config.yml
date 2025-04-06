@@ -198,17 +198,6 @@ jobs:
             if [[ "${CACHE_APP}" == "common" ]]; then export CACHE_APP="posts"; fi
             if [[ "main" == "<< pipeline.git.branch >>" ]]; then
               export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CACHE_APP}:${PRIMARY_DOCKER_TAG:0:1}"
-            fi
-            if [[ "1" == "2" ]]  && [[ "main" == "<< pipeline.git.branch >>" ]] && [[ "main" != "${PRIMARY_DOCKER_TAG}" ]]; then
-              NOW=${PRIMARY_DOCKER_TAG:0:1}
-              echo "Handling TAG=${PRIMARY_DOCKER_TAG}"
-              for A in $(echo ${PRIMARY_DOCKER_TAG:1} | tr "." "\n"); do 
-                echo "Dealing with ${NOW}; ${PREV}"
-                export CACHE_FROM_IMAGES="${CACHE_FROM_IMAGES},${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CACHE_APP}:${NOW}"
-                PREV=$NOW
-                NOW="$NOW.$A"
-              done
-              export CACHE_FROM_IMAGES=${CACHE_FROM_IMAGES:1}
             else
               export CACHE_FROM_IMAGES="${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CACHE_APP}:latest"
             fi
@@ -223,7 +212,7 @@ jobs:
           command: |
             for I in $(echo ${CACHE_FROM_IMAGES} | tr "," "\n"); do
               echo "Pulling $I"
-              docker pull $I
+              docker pull $I || if [[ "main" == "<< pipeline.git.branch >>" ]]; then true; else false; fi
             done
       - docker/build:
           step-name: Build << parameters.project >> docker image
