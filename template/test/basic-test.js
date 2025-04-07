@@ -9,7 +9,8 @@ describe('Basic test', () => {
 	let app;
 	// Ensures that app is loaded right before the test
 	before(async function () {
-		app = (await import('../src/index.js')).default;
+		const start = await import('../src/index.js');
+		app = start.default;
 	});
 	it('Root', (done) => {
 		chai
