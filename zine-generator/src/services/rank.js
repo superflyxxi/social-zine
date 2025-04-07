@@ -94,21 +94,25 @@ async function getFinalScore(rankRules, rankScale, itemScore) {
 		let score = 0;
 		if (rankRules[r]) {
 			switch (rankRules[r].type) {
-				case 'number':
+				case 'number': {
 					score = scoreNumber(value, rankRules[r], rankScale[r]);
 					break;
+				}
 
-				case 'boolean':
+				case 'boolean': {
 					score = scoreBoolean(value, rankRules[r], rankScale[r]);
 					break;
+				}
 
-				case 'version':
+				case 'version': {
 					score = scoreVersion(value, rankRules[r], rankScale[r]);
 					break;
+				}
 
-				default:
+				default: {
 					console.error('Invalid type configured: rank=', r, 'type=', rankRules[r].type);
 					break;
+				}
 			}
 		}
 
@@ -124,17 +128,22 @@ function initScoreScaleForRank(r, rankRule, itemScoreList) {
 	if (rankRule) {
 		const mapValues = {};
 		switch (rankRule.type) {
-			case 'number':
+			case 'number': {
 				mapValues.values = [];
 				break;
-			case 'version':
+			}
+
+			case 'version': {
 				mapValues.major = [];
 				mapValues.minor = [];
 				mapValues.patch = [];
 				break;
-			default:
+			}
+
+			default: {
 				// Skip any types that don't need counting
 				return result;
+			}
 		}
 
 		for (const itemScore of itemScoreList) {
@@ -143,15 +152,19 @@ function initScoreScaleForRank(r, rankRule, itemScoreList) {
 			if (value) {
 				let version;
 				switch (rankRule.type) {
-					case 'number':
+					case 'number': {
 						mapValues.values.push(value);
 						break;
-					case 'version':
+					}
+
+					case 'version': {
 						version = getVersionObject(value);
 						if (version?.major !== null) mapValues.major.push(version.major);
 						if (version?.minor !== null) mapValues.minor.push(version.minor);
 						if (version?.patch !== null) mapValues.patch.push(version.patch);
 						break;
+					}
+
 					default:
 					// Should never get here
 				}
@@ -173,10 +186,12 @@ function populateScoreScaleForRank(scoreScale, maxPoints, rankRule) {
 		let temporarySemantic;
 		let semantic = 'major';
 		switch (rankRule.type) {
-			case 'number':
+			case 'number': {
 				scoreScale.multiplier = maxPoints / (scoreScale.values.max - scoreScale.values.min);
 				break;
-			case 'version':
+			}
+
+			case 'version': {
 				for (temporarySemantic of ['major', 'minor', 'patch']) {
 					if (scoreScale[temporarySemantic]?.max !== scoreScale[temporarySemantic]?.min) {
 						semantic = temporarySemantic;
@@ -187,8 +202,11 @@ function populateScoreScaleForRank(scoreScale, maxPoints, rankRule) {
 				scoreScale.semantic = semantic;
 				scoreScale.multiplier = maxPoints / (scoreScale[semantic].max - scoreScale[semantic].min);
 				break;
-			default:
+			}
+
+			default: {
 				scoreScale.multiplier = maxPoints;
+			}
 		}
 	}
 }
