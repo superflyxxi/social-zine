@@ -24,7 +24,7 @@ export async function createPost(req, res) {
 }
 
 export async function deletePost(req, res) {
-	await Post.deleteOne({__id: req.params.id});
+	await Post.deleteOne({_id: req.params.id});
 	res.status(204);
 	res.send();
 }
