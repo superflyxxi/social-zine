@@ -8,7 +8,8 @@ chai.use(chaiHttp);
 describe('Post tests', function () {
 	let app;
 	before(async function () {
-		app = (await import('../src/index.js')).default;
+		const start = await import('../src/index.js');
+		app = start.default;
 	});
 
 	it('List nothing', function (done) {
