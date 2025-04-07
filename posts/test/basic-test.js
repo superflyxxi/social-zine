@@ -8,7 +8,8 @@ chai.use(chaiHttp);
 describe('Basic test', () => {
 	let app;
 	before(async function () {
-		app = (await import('../src/index.js')).default;
+		const start = await import('../src/index.js');
+		app = start.default;
 	});
 	it('Root', (done) => {
 		chai
