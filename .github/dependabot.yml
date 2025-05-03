@@ -2,7 +2,7 @@ version: 2
 
 updates:
   - package-ecosystem: "npm"
-    target-branch: "dependabot"
+    target-branch: "deps"
     directory: "/"
     schedule:
       interval: "monthly"
@@ -12,7 +12,7 @@ updates:
     reviewers:
       - superflyxxi
   - package-ecosystem: "npm"
-    target-branch: "dependabot"
+    target-branch: "deps"
     directory: "/zine-generator"
     schedule:
       interval: "monthly"
@@ -22,7 +22,7 @@ updates:
     reviewers:
       - superflyxxi
   - package-ecosystem: "docker"
-    target-branch: "dependabot"
+    target-branch: "deps"
     directory: "/zine-generator"
     schedule:
       interval: "monthly"
@@ -32,7 +32,7 @@ updates:
     reviewers:
       - superflyxxi
   - package-ecosystem: "npm"
-    target-branch: "dependabot"
+    target-branch: "deps"
     directory: "/common"
     schedule:
       interval: "monthly"
@@ -42,7 +42,7 @@ updates:
     reviewers:
       - superflyxxi
   - package-ecosystem: "docker"
-    target-branch: "dependabot"
+    target-branch: "deps"
     directory: "/common"
     schedule:
       interval: "monthly"
@@ -53,7 +53,7 @@ updates:
       - superflyxxi
   - package-ecosystem: "npm"
     directory: "/posts"
-    target-branch: "dependabot"
+    target-branch: "deps"
     schedule:
       interval: "monthly"
     commit-message:
