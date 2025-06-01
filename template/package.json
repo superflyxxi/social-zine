@@ -24,6 +24,6 @@
     "mocha": "^9.1.2",
     "mocha-junit-reporter": "^2.0.0",
     "mongodb-memory-server": "^10.1.4",
-    "nock": "^14.0.4"
+    "nock": "^14.0.5"
   }
 }
