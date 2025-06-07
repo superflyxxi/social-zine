@@ -62,6 +62,7 @@ updates:
     assignees:
       - superflyxxi
   - package-ecosystem: "docker"
+    target-branch: "deps"
     directory: "/posts"
     schedule:
       interval: "monthly"
@@ -71,6 +72,7 @@ updates:
     assignees:
       - superflyxxi
   - package-ecosystem: "npm"
+    target-branch: "deps"
     directory: "/template"
     schedule:
       interval: "monthly"
@@ -80,6 +82,7 @@ updates:
     assignees:
       - superflyxxi
   - package-ecosystem: "docker"
+    target-branch: "deps"
     directory: "/template"
     schedule:
       interval: "monthly"
@@ -89,6 +92,7 @@ updates:
     assignees:
       - superflyxxi
   - package-ecosystem: "npm"
+    target-branch: "deps"
     directory: "/int-test"
     schedule:
       interval: "monthly"
@@ -98,6 +102,7 @@ updates:
     assignees:
       - superflyxxi
   - package-ecosystem: "docker"
+    target-branch: "deps"
     directory: "/int-test"
     schedule:
       interval: "monthly"
