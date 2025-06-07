@@ -106,8 +106,7 @@ jobs:
       - node/install-packages
       - run:
           name: Verify XO
-          command: |
-            find . -mindepth 1 -maxdepth 1 -type d | grep -v "\./\..*" | grep -v "\./node_modules" | xargs npm run xo -- 
+          command: npm run xo
 
   sonar-scan:
     executor: *node-executor
