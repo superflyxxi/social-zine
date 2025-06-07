@@ -66,7 +66,7 @@ function scoreBoolean(value, rankRule, rankScale) {
 
 function scoreVersion(value, rankRule, rankScale) {
 	const version = getVersionObject(value);
-	const semantic = rankScale.semantic;
+	const {semantic} = rankScale;
 	if (version[semantic] && rankRule.scoreMethod === 'PREFER_HIGH') {
 		return (version[semantic] - rankScale[semantic].min) * rankScale.multiplier;
 	}
