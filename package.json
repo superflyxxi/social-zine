@@ -2,7 +2,7 @@
   "name": "social-zine",
   "description": "Social Network Magazine",
   "scripts": {
-    "xo": "xo"
+    "xo": "xo **/src"
   },
   "repository": {
     "type": "git",
