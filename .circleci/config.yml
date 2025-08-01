@@ -410,6 +410,7 @@ workflows:
           name: validate-dockerfiles
           context: default
           dockerfiles: "common/Dockerfile:int-test/Dockerfile:template/Dockerfile:zine-generator/Dockerfile:posts/Dockerfile"
+          hadolint-tag: v2.12.0-debian
       - build-docker:
           context: default
           project: common
