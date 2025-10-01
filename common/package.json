@@ -25,7 +25,7 @@
     "morgan": "1",
     "swagger-jsdoc": "6",
     "swagger-ui-express": "5",
-    "uuid": "11",
+    "uuid": "13",
     "validate.js": "0"
   }
 }
