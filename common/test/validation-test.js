@@ -1,4 +1,4 @@
-import chai from 'chai';
+import * as chai from 'chai';
 import {validate, ValidationError} from '../src/index.js';
 
 const {expect} = chai;

@@ -1,9 +1,9 @@
-import chai from 'chai';
-import chaiHttp from 'chai-http';
+import * as chai from 'chai';
+import {default as chaiHttp, request} from "chai-http";
+chai.use(chaiHttp);
 import {createServer} from '../src/index.js';
 
 const {expect} = chai;
-chai.use(chaiHttp);
 
 const server = createServer('Title', function (app) {
 	app.get('/test1', function (req, res) {
@@ -15,9 +15,7 @@ const server = createServer('Title', function (app) {
 
 describe('Express path', function () {
 	it('Found', function (done) {
-		chai
-			.request(server)
-			.get('/test1')
+		request.execute(server).get('/test1')
 			.end((error, res) => {
 				expect(res).to.have.status(200);
 				expect(res.body).to.deep.include({
@@ -28,8 +26,7 @@ describe('Express path', function () {
 	});
 
 	it('Not Found', function (done) {
-		chai
-			.request(server)
+		request.execute(server)
 			.get('/something')
 			.end((error, res) => {
 				expect(res).to.have.status(404);
@@ -45,8 +42,7 @@ describe('Express path', function () {
 
 	describe('API Docs', function () {
 		it('Title and version', function (done) {
-			chai
-				.request(server)
+			request.execute(server)
 				.get('/api-docs/json')
 				.end((error, res) => {
 					expect(res).to.have.status(200);
@@ -61,8 +57,7 @@ describe('Express path', function () {
 		});
 
 		it('HTML Swagger', function (done) {
-			chai
-				.request(server)
+			request.execute(server)
 				.get('/api-docs')
 				.end((error, res) => {
 					expect(res).to.have.status(200);
