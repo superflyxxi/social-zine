@@ -1,4 +1,4 @@
-import chai from 'chai';
+import * as chai from 'chai';
 import {getVersionObject} from '../src/index.js';
 
 const {expect} = chai;
