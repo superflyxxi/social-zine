@@ -17,8 +17,10 @@ async function beforeAll() {
 }
 
 async function afterAll() {
-	console.log('Shutting down mongo');
-	await mongoServer.stop();
+	if (mongoServer) {
+		console.log('Shutting down mongo');
+		await mongoServer.stop();
+	}
 }
 
 export const mochaHooks = {afterAll, beforeAll, afterEach};
