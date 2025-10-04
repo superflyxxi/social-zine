@@ -1,9 +1,8 @@
-import chai from 'chai';
-import chaiHttp from 'chai-http';
+import * as chai from 'chai';
+import {default as chaiHttp, request} from "chai-http";
+chai.use(chaiHttp);
 
 const {expect} = chai;
-
-chai.use(chaiHttp);
 
 describe('Post tests', function () {
 	let app;
@@ -13,7 +12,7 @@ describe('Post tests', function () {
 	});
 
 	it('List nothing', async function () {
-		const res = await chai.request(app).get('/v1/posts');
+		const res = await request.execute(app).get('/v1/posts');
 		expect(res).to.have.status(200);
 		// eslint-disable-next-line no-unused-expressions
 		expect(res).to.be.json;
@@ -26,7 +25,7 @@ describe('Post tests', function () {
 			content: 'This is the first post',
 		};
 		// Create One
-		let res = await chai.request(app).post('/v1/posts').send(input);
+		let res = await request.execute(app).post('/v1/posts').send(input);
 		expect(res).to.have.status(200);
 		// eslint-disable-next-line no-unused-expressions
 		expect(res).to.be.json;
@@ -41,7 +40,7 @@ describe('Post tests', function () {
 
 		// Get List
 		input._id = res.body._id;
-		res = await chai.request(app).get('/v1/posts');
+		res = await request.execute(app).get('/v1/posts');
 		expect(res).to.have.status(200);
 		// eslint-disable-next-line no-unused-expressions
 		expect(res).to.be.json;
@@ -54,7 +53,7 @@ describe('Post tests', function () {
 		});
 
 		// Get Single
-		res = await chai.request(app).get('/v1/posts/' + input._id);
+		res = await request.execute(app).get('/v1/posts/' + input._id);
 		console.log('body', res.body);
 		expect(res).to.have.status(200);
 		// eslint-disable-next-line no-unused-expressions
@@ -68,13 +67,13 @@ describe('Post tests', function () {
 		expect(new Date(res.body.date)).to.deep.equal(input.date);
 
 		// Delete One
-		res = await chai.request(app).delete('/v1/posts/' + input._id);
+		res = await request.execute(app).delete('/v1/posts/' + input._id);
 		console.log('body', res.body);
 		expect(res, 'delete status').to.have.status(204);
 		expect(res.body).to.deep.equal({});
 
 		// Get One
-		res = await chai.request(app).get('/v1/posts/' + input._id);
+		res = await request.execute(app).get('/v1/posts/' + input._id);
 		expect(res, 'get after delete status').to.have.status(404);
 		// eslint-disable-next-line no-unused-expressions
 		expect(res).to.be.json;
@@ -87,7 +86,7 @@ describe('Post tests', function () {
 	});
 
 	it('Get list of many', async function () {
-		let res = await chai.request(app).post('/v1/posts').send({
+		let res = await request.execute(app).post('/v1/posts').send({
 			date: new Date(),
 			content: 'This is the first',
 		});
@@ -95,7 +94,7 @@ describe('Post tests', function () {
 		// eslint-disable-next-line no-unused-expressions
 		expect(res).to.be.json;
 
-		res = await chai.request(app).post('/v1/posts').send({
+		res = await request.execute(app).post('/v1/posts').send({
 			date: new Date(),
 			content: 'This is the second',
 		});
@@ -103,7 +102,7 @@ describe('Post tests', function () {
 		// eslint-disable-next-line no-unused-expressions
 		expect(res).to.be.json;
 
-		res = await chai.request(app).get('/v1/posts');
+		res = await request.execute(app).get('/v1/posts');
 		expect(res).to.have.status(200);
 		// eslint-disable-next-line no-unused-expressions
 		expect(res).to.be.json;

@@ -1,9 +1,8 @@
-import chai from 'chai';
-import chaiHttp from 'chai-http';
+import * as chai from 'chai';
+import {default as chaiHttp, request} from "chai-http";
+chai.use(chaiHttp);
 
 const {expect} = chai;
-
-chai.use(chaiHttp);
 
 describe('Basic test', () => {
 	let app;
@@ -12,8 +11,7 @@ describe('Basic test', () => {
 		app = start.default;
 	});
 	it('Root', (done) => {
-		chai
-			.request(app)
+		request.execute(app)
 			.get('/')
 			.end((error, res) => {
 				expect(res).to.have.status(404);
@@ -28,8 +26,7 @@ describe('Basic test', () => {
 			});
 	});
 	it('API Docs JSON', (done) => {
-		chai
-			.request(app)
+		request.execute(app)
 			.get('/api-docs/json')
 			.end((error, res) => {
 				expect(res).to.have.status(200);
