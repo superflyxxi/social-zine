@@ -1,15 +1,13 @@
-import chai from 'chai';
-import chaiHttp from 'chai-http';
+import * as chai from 'chai';
+import {default as chaiHttp, request} from "chai-http";
 import app from '../../src/index.js';
 
-const {expect} = chai;
-
 chai.use(chaiHttp);
+const {expect} = chai;
 
 describe('Basic test', () => {
 	it('Root', (done) => {
-		chai
-			.request(app)
+		request.execute(app)
 			.get('/')
 			.end((error, res) => {
 				expect(res).to.have.status(404);
@@ -24,8 +22,7 @@ describe('Basic test', () => {
 			});
 	});
 	it('API Docs JSON', (done) => {
-		chai
-			.request(app)
+		request.execute(app)
 			.get('/api-docs/json')
 			.end((error, res) => {
 				expect(res).to.have.status(200);
