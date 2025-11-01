@@ -15,9 +15,9 @@
   },
   "homepage": "https://github.com/superflyxxi/social-zine#readme",
   "devDependencies": {
-    "@semantic-release/exec": "^7.1.0",
-    "semantic-release": "^25.0.1",
-    "xo": "^1.2.3"
+    "@semantic-release/exec": "7",
+    "semantic-release": "25",
+    "xo": "1"
   },
   "xo":{
 	"ignores":[],
