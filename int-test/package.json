@@ -7,7 +7,7 @@
   },
   "author": "SuperFlyXXI <superflyxxi@yahoo.com>",
   "license": "Apache-2.0",
-  "dependencies": {
+  "devDependencies": {
     "c8": "10",
     "chai": "6",
     "chai-almost": "1",
