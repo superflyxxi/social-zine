@@ -162,7 +162,7 @@ jobs:
                   docker load -i /tmp/workspace/common-image.tar
       - run:
           name: NPM Install
-          command: npm ci
+          command: npm ci --omit=dev
       - docker/build:
           step-name: Build << parameters.project >> docker image
           docker-context: ./<< parameters.project >>
