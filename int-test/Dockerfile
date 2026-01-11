@@ -5,3 +5,4 @@ ENTRYPOINT ["npm"]
 CMD ["test"]
 WORKDIR /app/int-test
 ADD . /app/int-test
+RUN npm ci
