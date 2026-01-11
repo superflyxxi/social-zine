@@ -1,4 +1,4 @@
-ARG NODE_VERSION
+ARG NODE_VERSION=missing
 FROM node:${NODE_VERSION}-alpine
 LABEL org.opencontainers.image.authors="SuperFlyXXI <superflyxxi@yahoo.com>"
 ENV NODE_ENV=production
