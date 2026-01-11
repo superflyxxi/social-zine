@@ -160,9 +160,17 @@ jobs:
                 command: |
                   echo "export COMMON_IMAGE=common:build" >> ${BASH_ENV}
                   docker load -i /tmp/workspace/common-image.tar
+            - run:
+                name: NPM Install Common
+                command: |
+                  cd common
+                  npm ci --omit=dev
+
       - run:
-          name: NPM Install
-          command: npm ci --omit=dev
+          name: NPM Install << parameters.project >>
+          command: |
+            cd << parameters.project >>
+            npm ci
       - docker/build:
           step-name: Build << parameters.project >> docker image
           docker-context: ./<< parameters.project >>
