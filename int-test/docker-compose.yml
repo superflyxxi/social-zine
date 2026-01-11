@@ -1,15 +1,20 @@
-version: '3'
-
 services:
   zine-generator:
     image: zine-generator:build
     restart: always
     environment:
       NODE_ENV: development
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:3000/api-docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
   test:
     image: int-test:build
     depends_on:
-      - zine-generator
+      zine-generator:
+        condition: service_healthy
     restart: "no"
     environment:
       BASE_URL: "http://zine-generator:3000"
