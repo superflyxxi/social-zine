@@ -111,7 +111,8 @@ jobs:
   sonar-scan:
     executor: *node-executor
     steps:
-      - checkout
+      - checkout:
+          method: full
       - attach_workspace:
           at: .
       - run:
