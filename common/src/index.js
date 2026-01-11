@@ -120,7 +120,6 @@ function getApiDocsRouter(title) {
 }
 
 export const serverConfig = {
-	port: 3000,
 	version: getVersionFromFile(),
 };
 
