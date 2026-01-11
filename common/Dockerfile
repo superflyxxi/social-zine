@@ -5,5 +5,5 @@ ENV NODE_ENV=production
 WORKDIR /app
 ENTRYPOINT ["npm"]
 CMD ["start"]
-RUN apk update && apk add curl
+RUN apk update && apk add curl=8.17.0-r1
 COPY ./ /common/
