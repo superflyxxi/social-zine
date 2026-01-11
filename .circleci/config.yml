@@ -138,12 +138,11 @@ jobs:
       - sonarcloud/scan
 
   build-docker:
+    executor: *node-executor 
     parameters:
       project:
         description: The sub-project to work on.
         type: string
-    docker:
-      - image: cimg/base:stable
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
@@ -161,6 +160,9 @@ jobs:
                 command: |
                   echo "export COMMON_IMAGE=common:build" >> ${BASH_ENV}
                   docker load -i /tmp/workspace/common-image.tar
+      - run:
+          name: NPM Install
+          command: npm ci
       - docker/build:
           step-name: Build << parameters.project >> docker image
           docker-context: ./<< parameters.project >>
