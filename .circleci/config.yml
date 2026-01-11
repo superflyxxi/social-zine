@@ -145,88 +145,33 @@ jobs:
     docker:
       - image: cimg/base:stable
     steps:
-      - when:
-          condition:
-            equal: [main, << pipeline.git.branch >>]
-          steps:
-          - setup_remote_docker:
-              docker_layer_caching: false
-      - unless:
-          condition:
-            equal: [main, << pipeline.git.branch >>]
-          steps:
-          - setup_remote_docker:
-              docker_layer_caching: true
+      - setup_remote_docker:
+          docker_layer_caching: true
       - attach_workspace:
           at: /tmp/workspace
-      - run:
-          name: Load docker images
-          command: |
-            ls /tmp/workspace
-            if [[ -f /tmp/workspace/common-image.tar ]]; then
-              docker load -i /tmp/workspace/common-image.tar
-            fi
-      - export-primary-docker-tag
       - checkout
-      - run: 
-          name: Determine version.txt
-          working_directory: ./<< parameters.project >>
-          command: |
-            cp -v /tmp/workspace/full_version.txt ./src/version.txt
-      - run:
-          name: Determine Tag and Common Image Name
-          working_directory: ./<< parameters.project >>
-          command: |
-            export DOCKER_TAGS=${PRIMARY_DOCKER_TAG}
-            if [[ "main" == "<< pipeline.git.branch >>" ]] && [[ "main" != "${PRIMARY_DOCKER_TAG}" ]]; then
-              for A in $(echo ${PRIMARY_DOCKER_TAG} | tr "." "\n"); do 
-                NOW="$PREV.$A"
-                export DOCKER_TAGS="${DOCKER_TAGS},${NOW:1}"
-                PREV=$NOW
-              done
-              export DOCKER_TAGS="${DOCKER_TAGS},main,latest"
-            fi
-            if [[ "common" != "<< parameters.project >>" ]]; then
-              echo "export COMMON_IMAGE=${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/common:${PRIMARY_DOCKER_TAG}" >> ${BASH_ENV}
-            fi
-            echo "export DOCKER_TAGS=${DOCKER_TAGS}" >> ${BASH_ENV}
-            cat ${BASH_ENV}
-      - run:
-          name: Determine cache from images
-          command: |
-            export CACHE_APP=<< parameters.project >>
-            if [[ "${CACHE_APP}" == "common" ]]; then export CACHE_APP="posts"; fi
-            if [[ "main" == "<< pipeline.git.branch >>" ]] && [[ "main" != "${PRIMARY_DOCKER_TAG}" ]]; then
-              export CACHE_FROM_IMAGES="${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CACHE_APP}:${PRIMARY_DOCKER_TAG:0:1}"
-            else
-              export CACHE_FROM_IMAGES="${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CACHE_APP}:main"
-            fi
-            echo "export CACHE_FROM_IMAGES=${CACHE_FROM_IMAGES}" >> ${BASH_ENV}
-            cat ${BASH_ENV}
-      - docker/check:
-          registry: ${PRIVATE_DOCKER_REGISTRY}
-          docker-password: PRIVATE_DOCKER_PASSWORD
-          docker-username: PRIVATE_DOCKER_USERNAME
-      - run:
-          name: Docker pull cache images
-          command: |
-            for I in $(echo ${CACHE_FROM_IMAGES} | tr "," "\n"); do
-              echo "Pulling $I"
-              docker pull $I || if [[ "main" == "<< pipeline.git.branch >>" ]]; then true; else false; fi
-            done
+      - when:
+          condition:
+            not:
+              equal: [common, << parameters.project >>]
+          steps:
+            - run:
+                name: Determine Common Image Name
+                working_directory: ./<< parameters.project >>
+                command: |
+                  echo "export COMMON_IMAGE=common:build" >> ${BASH_ENV}
+                  docker load -i /tmp/workspace/common-image.tar
       - docker/build:
           step-name: Build << parameters.project >> docker image
           docker-context: ./<< parameters.project >>
           path: ./<< parameters.project >>
-          image: ${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>
-          registry: ${PRIVATE_DOCKER_REGISTRY}
-          tag: ${DOCKER_TAGS}
+          image: << parameters.project >>
+          tag: build
           extra_build_args: --build-arg COMMON_IMAGE=${COMMON_IMAGE} --build-arg NODE_VERSION=<< pipeline.parameters.node-version >>
-          cache_from: ${CACHE_FROM_IMAGES}
       - run:
           name: Save docker image
           command: |
-            docker images --format '{{ .Repository }}:{{.Tag}}' | grep -v "<none>" | grep "<< parameters.project >>" | xargs docker save -o << parameters.project >>-image.tar
+            docker save -o << parameters.project >>-image.tar <<parameters.project>>:build
       - persist_to_workspace:
           root: ./
           paths:
@@ -235,36 +180,27 @@ jobs:
   release:
     resource_class: small
     executor: *node-executor 
-    parameters:
-      prerelease:
-        description: Whether it's a pre-release and not actually release.
-        type: boolean
-        default: false
     steps:
       - checkout
       - node/install-packages
       - attach_workspace:
           at: /tmp/workspace
-      - when:
-          condition: << parameters.prerelease >>
-          steps:
-            - run:
-                name: Define additional args
-                command: |
-                  echo "export ADDITIONAL_ARGS=--dry-run" >> ${BASH_ENV}
       - run:
           name: Run semantic-release
-          command: npx semantic-release ${ADDITIONAL_ARGS}
+          command: npx semantic-release
       - run:
           name: Capture version
           command: |
-            if [[ "" == "$(cat version.txt)" ]]; then 
+            # If file not found or contains no data; then file not generated
+            if [[ ! -f version.txt ]] || [[ "" == "$(cat version.txt)" ]]; then 
               printf "%s-%s" ${CIRCLE_BRANCH} ${CIRCLE_SHA1:0:7} | sed 's#/#-#g' > /tmp/workspace/full_version.txt
               printf "${CIRCLE_BRANCH}" | sed 's#/#-#g' > /tmp/workspace/short_version.txt
             else
               cp -v version.txt /tmp/workspace/full_version.txt
               cp -v version.txt /tmp/workspace/short_version.txt
             fi
+            printf "Full version "
+            cat /tmp/workspace/full_version.txt
       - persist_to_workspace:
           root: /tmp/workspace
           paths:
@@ -311,10 +247,9 @@ jobs:
       - image: cimg/base:stable
     steps:
       - setup_remote_docker:
-          docker_layer_caching: false
+          docker_layer_caching: true
       - attach_workspace:
           at: /tmp/workspace
-      - export-primary-docker-tag
       - run:
           name: Load docker images
           command: |
@@ -324,9 +259,8 @@ jobs:
           step-name: Build integration testing docker image
           docker-context: ./int-test
           path: ./int-test
-          image: ${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/int-test
-          registry: ${PRIVATE_DOCKER_REGISTRY}
-          tag: ${PRIMARY_DOCKER_TAG}
+          image: int-test
+          tag: build
           extra_build_args: --build-arg NODE_VERSION=<< pipeline.parameters.node-version >>
       - docker/check:
           registry: ${PRIVATE_DOCKER_REGISTRY}
@@ -336,7 +270,7 @@ jobs:
           step-name: Push integration testing docker image
           image: ${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/int-test
           registry: ${PRIVATE_DOCKER_REGISTRY}
-          tag: ${PRIMARY_DOCKER_TAG}
+          tag: build
       - run:
           name: Bring up
           command: |
@@ -370,24 +304,29 @@ jobs:
             fi
             echo "export DOCKER_TAGS=${DOCKER_TAGS}" >> ${BASH_ENV}
             echo "DOCKER_TAGS=${DOCKER_TAGS}"
+      - run:
+          name: Tag images to export
+          command: |
+            for IMAGE in posts zine-generator; do
+              for TAG in ${DOCKER_TAGS//,/ }; do
+                echo "Tagging ${IMAGE}:${TAG}"
+                docker tag ${IMAGE}:build ${PRIVATE_DOCKER_REGISTRY}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${IMAGE}:${TAG}
+              done
+            done
       - docker/push:
           step-name: Push posts
-          image: ${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/posts
+          image: ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/posts
           registry: ${PRIVATE_DOCKER_REGISTRY}
           tag: ${DOCKER_TAGS}
       - docker/push:
           step-name: Push zine-generator
-          image: ${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/zine-generator
+          image: ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/zine-generator
           registry: ${PRIVATE_DOCKER_REGISTRY}
           tag: ${DOCKER_TAGS}
 
 workflows:
   default:
     jobs:
-      - release:
-          name: pre-release
-          context: default
-          prerelease: true
       - build-js:
           context: default
           name: build-js-common
@@ -417,9 +356,7 @@ workflows:
           project: common
           name: build-docker-common
           requires:
-            - pre-release
             - build-js-common
-            - pre-release
       - build-docker:
           context: default
           matrix:
@@ -430,24 +367,19 @@ workflows:
           requires:
             - build-js
             - build-docker-common
-      - release:
-          prerelease: false
-          context: default
-          requires:
-            - publish-docker-private
-          filters:
-            branches:
-              only:
-                - main
       - integration-test:
           context: default
           requires:
             - build-docker
+      - release:
+          context: default
+          requires:
+            - integration-test
       - publish-docker:
           name: publish-docker-private
           context: default
           requires:
-            - build-docker
+            - release
       - deploy-docker-compose:
           context: default
           matrix:

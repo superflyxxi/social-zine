@@ -2,12 +2,12 @@ version: '3'
 
 services:
   zine-generator:
-    image: ${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/social-zine/zine-generator:${PRIMARY_DOCKER_TAG}
+    image: zine-generator:build
     restart: always
     environment:
       NODE_ENV: development
   test:
-    image: ${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/social-zine/int-test:${PRIMARY_DOCKER_TAG}
+    image: int-test:build
     depends_on:
       - zine-generator
     restart: "no"
