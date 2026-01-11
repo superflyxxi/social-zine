@@ -6,4 +6,3 @@ WORKDIR /app
 ENTRYPOINT ["npm"]
 CMD ["start"]
 COPY ./ /common/
-RUN cd /common && npm install
