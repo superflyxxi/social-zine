@@ -138,7 +138,9 @@ jobs:
       - sonarcloud/scan
 
   build-docker:
-    executor: *node-executor 
+    resource_class: small
+    docker:
+      - image: cimg/base:stable
     parameters:
       project:
         description: The sub-project to work on.
@@ -164,16 +166,6 @@ jobs:
                 command: |
                   echo "export COMMON_IMAGE=common:build" >> ${BASH_ENV}
                   docker load -i /tmp/workspace/common-image.tar
-            - run:
-                name: NPM Install Common
-                command: |
-                  cd common
-                  npm ci --omit=dev
-      - run:
-          name: NPM Install << parameters.project >>
-          command: |
-            cd << parameters.project >>
-            npm ci
       - docker/build:
           step_name: Build << parameters.project >> docker image
           docker_context: ./<< parameters.project >>
@@ -291,8 +283,11 @@ jobs:
             docker compose -f int-test/docker-compose.yml up --abort-on-container-exit --exit-code-from test
 
   publish-docker:
-    executor: docker/machine
+    resource_class: small
+    docker:
+      - image: cimg/base:stable
     steps:
+      - setup_remote_docker
       - attach_workspace:
           at: /tmp/workspace
       - docker/check:
