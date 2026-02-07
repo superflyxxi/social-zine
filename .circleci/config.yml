@@ -13,7 +13,7 @@ parameters:
 
 orbs:
   node: circleci/node@4
-  docker: circleci/docker@2.8.1
+  docker: circleci/docker@3
   sonarcloud: sonarsource/sonarcloud@2.0.0
 
 commands:
@@ -150,8 +150,8 @@ jobs:
           at: /tmp/workspace
       - docker/check:
           registry: ${PRIVATE_DOCKER_REGISTRY}
-          docker-username: PRIVATE_DOCKER_USERNAME
-          docker-password: PRIVATE_DOCKER_PASSWORD
+          docker_username: PRIVATE_DOCKER_USERNAME
+          docker_password: PRIVATE_DOCKER_PASSWORD
       - checkout
       - when:
           condition:
@@ -175,8 +175,8 @@ jobs:
             cd << parameters.project >>
             npm ci
       - docker/build:
-          step-name: Build << parameters.project >> docker image
-          docker-context: ./<< parameters.project >>
+          step_name: Build << parameters.project >> docker image
+          docker_context: ./<< parameters.project >>
           path: ./<< parameters.project >>
           image: << parameters.project >>
           tag: build
@@ -270,8 +270,8 @@ jobs:
             find /tmp/workspace -name '*-image.tar' -exec docker load -i {} \;
       - checkout
       - docker/build:
-          step-name: Build integration testing docker image
-          docker-context: ./int-test
+          step_name: Build integration testing docker image
+          docker_context: ./int-test
           path: ./int-test
           image: int-test
           tag: build
@@ -297,8 +297,8 @@ jobs:
           at: /tmp/workspace
       - docker/check:
           registry: ${PRIVATE_DOCKER_REGISTRY}
-          docker-password: PRIVATE_DOCKER_PASSWORD
-          docker-username: PRIVATE_DOCKER_USERNAME
+          docker_password: PRIVATE_DOCKER_PASSWORD
+          docker_username: PRIVATE_DOCKER_USERNAME
       - run:
           name: Load docker images
           command: |
@@ -355,7 +355,6 @@ workflows:
           name: validate-dockerfiles
           context: default
           dockerfiles: "common/Dockerfile:int-test/Dockerfile:template/Dockerfile:zine-generator/Dockerfile:posts/Dockerfile"
-          hadolint-tag: v2.12.0-debian
       - build-docker:
           context: default
           project: common
