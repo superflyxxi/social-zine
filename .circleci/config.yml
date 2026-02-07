@@ -276,15 +276,15 @@ jobs:
           image: int-test
           tag: build
           extra_build_args: --build-arg NODE_VERSION=<< pipeline.parameters.node-version >>
-      - docker/check:
-          registry: ${PRIVATE_DOCKER_REGISTRY}
-          docker-password: PRIVATE_DOCKER_PASSWORD
-          docker-username: PRIVATE_DOCKER_USERNAME
-      - docker/push:
-          step-name: Push integration testing docker image
-          image: ${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/int-test
-          registry: ${PRIVATE_DOCKER_REGISTRY}
-          tag: build
+      #- docker/check:
+      #    registry: ${PRIVATE_DOCKER_REGISTRY}
+      #    docker-password: PRIVATE_DOCKER_PASSWORD
+      #    docker-username: PRIVATE_DOCKER_USERNAME
+      #- docker/push:
+      #    step-name: Push integration testing docker image
+      #    image: ${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/int-test
+      #    registry: ${PRIVATE_DOCKER_REGISTRY}
+      #    tag: build
       - run:
           name: Bring up
           command: |
