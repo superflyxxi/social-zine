@@ -145,9 +145,13 @@ jobs:
         type: string
     steps:
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
       - attach_workspace:
           at: /tmp/workspace
+      - docker/check:
+          registry: ${PRIVATE_DOCKER_REGISTRY}
+          docker-username: PRIVATE_DOCKER_USERNAME
+          docker-password: PRIVATE_DOCKER_PASSWORD
       - checkout
       - when:
           condition:
@@ -165,7 +169,6 @@ jobs:
                 command: |
                   cd common
                   npm ci --omit=dev
-
       - run:
           name: NPM Install << parameters.project >>
           command: |
@@ -177,7 +180,8 @@ jobs:
           path: ./<< parameters.project >>
           image: << parameters.project >>
           tag: build
-          extra_build_args: --build-arg COMMON_IMAGE=${COMMON_IMAGE} --build-arg NODE_VERSION=<< pipeline.parameters.node-version >>
+          cache_from: ${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:latest
+          extra_build_args: --cache-to type=inline --build-arg COMMON_IMAGE=${COMMON_IMAGE} --build-arg NODE_VERSION=<< pipeline.parameters.node-version >>
       - run:
           name: Save docker image
           command: |
@@ -317,12 +321,17 @@ jobs:
       - run:
           name: Tag images to export
           command: |
-            for IMAGE in posts zine-generator; do
+            for IMAGE in common posts zine-generator; do
               for TAG in ${DOCKER_TAGS//,/ }; do
                 echo "Tagging ${IMAGE}:${TAG}"
                 docker tag ${IMAGE}:build ${PRIVATE_DOCKER_REGISTRY}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${IMAGE}:${TAG}
               done
             done
+      - docker/push:
+          step-name: Push common
+          image: ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/common
+          registry: ${PRIVATE_DOCKER_REGISTRY}
+          tag: ${DOCKER_TAGS}
       - docker/push:
           step-name: Push posts
           image: ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/posts
