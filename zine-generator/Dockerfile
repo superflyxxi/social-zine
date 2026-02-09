@@ -1,4 +1,6 @@
 ARG COMMON_IMAGE=missing
 FROM ${COMMON_IMAGE}
 EXPOSE 3000
-COPY ./ /app/
+COPY package.json package-lock.json /app/
+RUN cd /app && npm install --omit=dev
+COPY . /app/
