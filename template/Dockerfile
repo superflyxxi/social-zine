@@ -1,5 +1,6 @@
 ARG COMMON_IMAGE
 FROM ${COMMON_IMAGE}
 EXPOSE 3000
-COPY ./ /app/
-RUN cd /app && npm install
+COPY package.json package-lock.json /app/
+RUN cd /app && npm install --omit=dev
+COPY . /app/
