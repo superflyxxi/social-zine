@@ -316,13 +316,17 @@ jobs:
       - run:
           name: Tag and push images to export
           command: |
-            for IMAGE in common posts zine-generator; do
+            for IMAGE in posts zine-generator; do
               for TAG in ${DOCKER_TAGS//,/ }; do
                 echo "Tagging ${IMAGE}:${TAG}"
                 docker tag ${IMAGE}:build ${PRIVATE_DOCKER_REGISTRY}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${IMAGE}:${TAG}
                 docker push ${PRIVATE_DOCKER_REGISTRY}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${IMAGE}:${TAG}
               done
             done
+            if [[ "main" == "<< pipeline.git.branch >>" ]]; then
+              docker tag common:build ${PRIVATE_DOCKER_REGISTRY}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/common:latest
+              docker push ${PRIVATE_DOCKER_REGISTRY}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/common:latest
+            fi
 
 workflows:
   default:
