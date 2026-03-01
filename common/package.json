@@ -14,7 +14,7 @@
     "src/index.js"
   ],
   "devDependencies": {
-    "c8": "10",
+    "c8": "11",
     "chai": "6",
     "chai-http": "5",
     "mocha": "11",
