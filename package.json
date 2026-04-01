@@ -17,7 +17,7 @@
   "devDependencies": {
     "@semantic-release/exec": "7",
     "semantic-release": "25",
-    "xo": "1"
+    "xo": "2"
   },
   "xo":{
 	"ignores":[],
