@@ -2,7 +2,7 @@ version: 2
 
 updates:
   - package-ecosystem: "npm"
-    target-branch: "deps"
+    target-branch: "main"
     directory: "/"
     schedule:
       interval: "monthly"
@@ -12,7 +12,7 @@ updates:
     assignees:
       - superflyxxi
   - package-ecosystem: "npm"
-    target-branch: "deps"
+    target-branch: "main"
     directory: "/zine-generator"
     schedule:
       interval: "monthly"
@@ -22,7 +22,7 @@ updates:
     assignees:
       - superflyxxi
   - package-ecosystem: "docker"
-    target-branch: "deps"
+    target-branch: "main"
     directory: "/zine-generator"
     schedule:
       interval: "monthly"
@@ -31,7 +31,7 @@ updates:
     assignees:
       - superflyxxi
   - package-ecosystem: "npm"
-    target-branch: "deps"
+    target-branch: "main"
     directory: "/common"
     schedule:
       interval: "monthly"
@@ -41,7 +41,7 @@ updates:
     assignees:
       - superflyxxi
   - package-ecosystem: "docker"
-    target-branch: "deps"
+    target-branch: "main"
     directory: "/common"
     schedule:
       interval: "monthly"
@@ -51,7 +51,7 @@ updates:
       - superflyxxi
   - package-ecosystem: "npm"
     directory: "/posts"
-    target-branch: "deps"
+    target-branch: "main"
     schedule:
       interval: "monthly"
     commit-message:
@@ -60,7 +60,7 @@ updates:
     assignees:
       - superflyxxi
   - package-ecosystem: "docker"
-    target-branch: "deps"
+    target-branch: "main"
     directory: "/posts"
     schedule:
       interval: "monthly"
@@ -69,7 +69,7 @@ updates:
     assignees:
       - superflyxxi
   - package-ecosystem: "npm"
-    target-branch: "deps"
+    target-branch: "main"
     directory: "/template"
     schedule:
       interval: "monthly"
@@ -79,7 +79,7 @@ updates:
     assignees:
       - superflyxxi
   - package-ecosystem: "docker"
-    target-branch: "deps"
+    target-branch: "main"
     directory: "/template"
     schedule:
       interval: "monthly"
@@ -88,7 +88,7 @@ updates:
     assignees:
       - superflyxxi
   - package-ecosystem: "npm"
-    target-branch: "deps"
+    target-branch: "main"
     directory: "/int-test"
     schedule:
       interval: "monthly"
@@ -98,7 +98,7 @@ updates:
     assignees:
       - superflyxxi
   - package-ecosystem: "docker"
-    target-branch: "deps"
+    target-branch: "main"
     directory: "/int-test"
     schedule:
       interval: "monthly"
