@@ -378,6 +378,9 @@ workflows:
           context: default
           requires:
             - integration-test
+            - sonar-scan
+            - validate-format
+            - validate-dockerfiles
       - publish-docker:
           name: publish-docker-private
           context: default
