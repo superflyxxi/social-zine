@@ -9,8 +9,6 @@ updates:
     commit-message:
       prefix: "ci(deps): "
       prefix-development: "ci(dev-deps): "
-    assignees:
-      - superflyxxi
   - package-ecosystem: "npm"
     target-branch: "main"
     directory: "/zine-generator"
@@ -19,8 +17,6 @@ updates:
     commit-message:
       prefix: "fix(zine-generator): "
       prefix-development: "chore(zine-generator): "
-    assignees:
-      - superflyxxi
   - package-ecosystem: "docker"
     target-branch: "main"
     directory: "/zine-generator"
@@ -28,8 +24,6 @@ updates:
       interval: "monthly"
     commit-message:
       prefix: "fix(zine-generator): "
-    assignees:
-      - superflyxxi
   - package-ecosystem: "npm"
     target-branch: "main"
     directory: "/common"
@@ -38,8 +32,6 @@ updates:
     commit-message:
       prefix: "fix(common): "
       prefix-development: "chore(common): "
-    assignees:
-      - superflyxxi
   - package-ecosystem: "docker"
     target-branch: "main"
     directory: "/common"
@@ -47,8 +39,6 @@ updates:
       interval: "monthly"
     commit-message:
       prefix: "fix(common): "
-    assignees:
-      - superflyxxi
   - package-ecosystem: "npm"
     directory: "/posts"
     target-branch: "main"
@@ -57,8 +47,6 @@ updates:
     commit-message:
       prefix: "fix(posts): "
       prefix-development: "chore(posts): "
-    assignees:
-      - superflyxxi
   - package-ecosystem: "docker"
     target-branch: "main"
     directory: "/posts"
@@ -66,8 +54,6 @@ updates:
       interval: "monthly"
     commit-message:
       prefix: "fix(posts): "
-    assignees:
-      - superflyxxi
   - package-ecosystem: "npm"
     target-branch: "main"
     directory: "/template"
@@ -76,8 +62,6 @@ updates:
     commit-message:
       prefix: "chore(template): "
       prefix-development: "chore(template): "
-    assignees:
-      - superflyxxi
   - package-ecosystem: "docker"
     target-branch: "main"
     directory: "/template"
@@ -85,8 +69,6 @@ updates:
       interval: "monthly"
     commit-message:
       prefix: "chore(template): "
-    assignees:
-      - superflyxxi
   - package-ecosystem: "npm"
     target-branch: "main"
     directory: "/int-test"
@@ -95,8 +77,6 @@ updates:
     commit-message:
       prefix: "test: "
       prefix-development: "test: "
-    assignees:
-      - superflyxxi
   - package-ecosystem: "docker"
     target-branch: "main"
     directory: "/int-test"
@@ -104,5 +84,3 @@ updates:
       interval: "monthly"
     commit-message:
       prefix: "test: "
-    assignees:
-      - superflyxxi
