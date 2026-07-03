@@ -7,7 +7,7 @@ ENTRYPOINT ["npm"]
 CMD ["start"]
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=5s CMD curl -f http://localhost:3000/api-docs/
-RUN apk add --no-cache curl=8.17.0-r1
+RUN apk add --no-cache curl=8.19.0-r0
 COPY package.json package-lock.json /common/
 RUN 	cd /common/ && \
 	 npm ci --omit=dev
