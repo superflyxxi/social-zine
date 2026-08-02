@@ -172,7 +172,7 @@ jobs:
           path: ./<< parameters.project >>
           image: << parameters.project >>
           tag: build
-          cache_from: ${PRIVATE_DOCKER_REGISTRY}/${PRIVATE_DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:latest
+          cache_from: ${PRIVATE_DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/<< parameters.project >>:latest
           extra_build_args: --cache-to type=inline --build-arg COMMON_IMAGE=${COMMON_IMAGE} --build-arg NODE_VERSION=<< pipeline.parameters.node-version >>
       - run:
           name: Save docker image
@@ -319,13 +319,13 @@ jobs:
             for IMAGE in posts zine-generator; do
               for TAG in ${DOCKER_TAGS//,/ }; do
                 echo "Tagging ${IMAGE}:${TAG}"
-                docker tag ${IMAGE}:build ${PRIVATE_DOCKER_REGISTRY}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${IMAGE}:${TAG}
-                docker push ${PRIVATE_DOCKER_REGISTRY}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${IMAGE}:${TAG}
+                docker tag ${IMAGE}:build ${PRIVATE_DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/${IMAGE}:${TAG}
+                docker push ${PRIVATE_DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/${IMAGE}:${TAG}
               done
             done
             if [[ "main" == "<< pipeline.git.branch >>" ]]; then
-              docker tag common:build ${PRIVATE_DOCKER_REGISTRY}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/common:latest
-              docker push ${PRIVATE_DOCKER_REGISTRY}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/common:latest
+              docker tag common:build ${PRIVATE_DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/common:latest
+              docker push ${PRIVATE_DOCKER_REGISTRY}/${CIRCLE_PROJECT_REPONAME}/common:latest
             fi
 
 workflows:
