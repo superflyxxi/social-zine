@@ -17,34 +17,6 @@
   "devDependencies": {
     "@semantic-release/exec": "7",
     "semantic-release": "25",
-    "xo": "1"
-  },
-  "xo":{
-	"ignores":[],
-	"prettier": true,
-	"rules":{
-		"unicorn/prevent-abbreviations":[
-			"error",
-			{
-				"replacements":{
-					"res": false,
-					"req": false,
-					"i": false,
-					"dir": false,
-					"docs": false
-				}
-			}
-		],
-		"new-cap":[
-			"error",
-			{
-				"capIsNewExceptions":[
-					"Router"
-				]
-			}
-		],
-		"guard-for-in":["off"],
-		"max-depth":["error", 5]
-	}
+    "xo": "4"
   }
 }
