@@ -27,6 +27,7 @@ module.exports = {
     'jsdoc/check-tag-names': ['error', {
       "definedTags": ["openapi"],
     }],
+    'jsdoc/require-asterisk-prefix': ['error', 'always'],
   }
 };
 
