@@ -8,6 +8,10 @@ import validatejs from 'validate.js';
 import {v4 as uuidv4} from 'uuid';
 
 /**
+ * @param error
+ * @param req
+ * @param res
+ * @param next
  * @openapi
  * components:
  *   schemas:
