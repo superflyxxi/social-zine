@@ -17,7 +17,7 @@
     "c8": "12",
     "chai": "6",
     "chai-http": "5",
-    "mocha": "11"
+    "mocha": "12"
   },
   "dependencies": {
     "express": "5",
