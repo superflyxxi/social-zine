@@ -22,7 +22,6 @@
     "chai-almost": "1",
     "chai-http": "5",
     "mocha": "9",
-    "mocha-junit-reporter": "2",
     "nock": "14"
   }
 }
