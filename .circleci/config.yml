@@ -85,7 +85,7 @@ jobs:
             MOCHA_FILE: ./test-results.xml
           command: |
             cp -v ../.c8rc.json ../.mocharc.json ./
-            npm test -- --forbid-pending --forbid-only --reporter mocha-junit-reporter
+            npm test -- --forbid-pending --forbid-only --reporter xunit --reporter-option output=./<< parameters.project >>/test-results.xml
       - run:
           name: Tar coverage
           command: tar -vcf << parameters.project >>-coverage.tar << parameters.project >>/coverage/
