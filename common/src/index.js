@@ -8,6 +8,10 @@ import validatejs from 'validate.js';
 import {v4 as uuidv4} from 'uuid';
 
 /**
+ * @param error
+ * @param req
+ * @param res
+ * @param next
  * @openapi
  * components:
  *   schemas:
@@ -94,9 +98,9 @@ export function getVersionObject(string) {
 	if (string) {
 		const splt = string.split('.');
 		return {
-			major: splt[0] ? Number.parseInt(splt[0], 10) : undefined,
-			minor: splt[1] ? Number.parseInt(splt[1], 10) : undefined,
-			patch: splt[2] ? Number.parseInt(splt[2], 10) : undefined,
+			major: splt[0] && !Number.isNaN(Number(splt[0])) ? Number(splt[0]) : undefined,
+			minor: splt[1] && !Number.isNaN(Number(splt[1])) ? Number(splt[1]) : undefined,
+			patch: splt[2] && !Number.isNaN(Number(splt[2])) ? Number(splt[2]) : undefined,
 		};
 	}
 
