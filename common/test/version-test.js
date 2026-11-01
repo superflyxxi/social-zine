@@ -34,7 +34,7 @@ describe('Version Object', function () {
 	});
 	it('None', function () {
 		expect(getVersionObject('string')).to.deep.equal({
-			major: Number.NaN,
+			major: undefined,
 			minor: undefined,
 			patch: undefined,
 		});
