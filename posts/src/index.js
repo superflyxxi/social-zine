@@ -4,10 +4,10 @@ import route from './routers/posts.js';
 
 await connectDatabase();
 
-const app = createServer('Posts', function (server) {
+const app = createServer('Posts', (server) => {
 	server.use('/v1/posts', route);
 });
-app.listen(serverConfig.port, function () {
+app.listen(serverConfig.port, () => {
 	console.log('Started Posts (', serverConfig.version, ') listening on', serverConfig.port);
 });
 
