@@ -2,10 +2,7 @@ import lodash from 'lodash';
 import {getVersionObject} from '@superflyxxi/common';
 
 export default async function rank(rankRules, ranking, items) {
-	const itemScoreList = [];
-	for (const item of items) {
-		itemScoreList.push({item});
-	}
+	const itemScoreList = Array.from(items, (item) => ({item}));
 
 	const rankScale = await generateScoreScale(rankRules, ranking, itemScoreList);
 	await scoreAndSortItems(rankRules, itemScoreList, rankScale);
@@ -13,10 +10,7 @@ export default async function rank(rankRules, ranking, items) {
 }
 
 async function scoreAndSortItems(rankRules, itemScoreList, rankScale) {
-	const promises = [];
-	for (const itemScore of itemScoreList) {
-		promises.push(getFinalScore(rankRules, rankScale, itemScore));
-	}
+	const promises = Array.from(itemScoreList, (itemScore) => getFinalScore(rankRules, rankScale, itemScore));
 
 	await Promise.all(promises);
 
@@ -28,6 +22,9 @@ async function scoreAndSortItems(rankRules, itemScoreList, rankScale) {
  * For example, if the min height in the item list is 130 and the max height is 150, then for
  * each mm, it would be equal to X points. If the min height is 140 and the max is 145, then
  * each mm is worth Y points, where Y > X.
+ * @param rankRules
+ * @param rankList
+ * @param itemScoreList
  */
 async function generateScoreScale(rankRules, rankList, itemScoreList) {
 	const scales = {};
@@ -49,19 +46,11 @@ function scoreNumber(value, rankRule, rankScale) {
 		return (rankScale.values.max - value) * rankScale.multiplier;
 	}
 
-	if (rankRule.scoreMethod === 'PREFER_HIGH') {
-		return (value - rankScale.values.min) * rankScale.multiplier;
-	}
-
-	return 0;
+	return rankRule.scoreMethod === 'PREFER_HIGH' ? (value - rankScale.values.min) * rankScale.multiplier : 0;
 }
 
 function scoreBoolean(value, rankRule, rankScale) {
-	if (value && rankRule.scoreMethod === 'PREFER_TRUE') {
-		return rankScale.multiplier;
-	}
-
-	return 0;
+	return value && rankRule.scoreMethod === 'PREFER_TRUE' ? rankScale.multiplier : 0;
 }
 
 function scoreVersion(value, rankRule, rankScale) {
@@ -71,11 +60,9 @@ function scoreVersion(value, rankRule, rankScale) {
 		return (version[semantic] - rankScale[semantic].min) * rankScale.multiplier;
 	}
 
-	if (version[semantic] && rankRule.scoreMethod === 'PREFER_LOW') {
-		return (rankScale[semantic].max - version[semantic]) * rankScale.multiplier;
-	}
-
-	return 0;
+	return version[semantic] && rankRule.scoreMethod === 'PREFER_LOW'
+		? (rankScale[semantic].max - version[semantic]) * rankScale.multiplier
+		: 0;
 }
 
 async function getFinalScore(rankRules, rankScale, itemScore) {
@@ -150,7 +137,6 @@ function initScoreScaleForRank(r, rankRule, itemScoreList) {
 			const value = lodash.get(itemScore.item, r);
 
 			if (value) {
-				let version;
 				switch (rankRule.type) {
 					case 'number': {
 						mapValues.values.push(value);
@@ -158,10 +144,19 @@ function initScoreScaleForRank(r, rankRule, itemScoreList) {
 					}
 
 					case 'version': {
-						version = getVersionObject(value);
-						if (version?.major !== null) mapValues.major.push(version.major);
-						if (version?.minor !== null) mapValues.minor.push(version.minor);
-						if (version?.patch !== null) mapValues.patch.push(version.patch);
+						const version = getVersionObject(value);
+						if (version?.major !== null) {
+							mapValues.major.push(version.major);
+						}
+
+						if (version?.minor !== null) {
+							mapValues.minor.push(version.minor);
+						}
+
+						if (version?.patch !== null) {
+							mapValues.patch.push(version.patch);
+						}
+
 						break;
 					}
 
@@ -182,31 +177,33 @@ function initScoreScaleForRank(r, rankRule, itemScoreList) {
 }
 
 function populateScoreScaleForRank(scoreScale, maxPoints, rankRule) {
-	if (rankRule) {
-		let temporarySemantic;
-		let semantic = 'major';
-		switch (rankRule.type) {
-			case 'number': {
-				scoreScale.multiplier = maxPoints / (scoreScale.values.max - scoreScale.values.min);
-				break;
-			}
+	if (!rankRule) {
+		return;
+	}
 
-			case 'version': {
-				for (temporarySemantic of ['major', 'minor', 'patch']) {
-					if (scoreScale[temporarySemantic]?.max !== scoreScale[temporarySemantic]?.min) {
-						semantic = temporarySemantic;
-						break;
-					}
+	let temporarySemantic;
+	let semantic = 'major';
+	switch (rankRule.type) {
+		case 'number': {
+			scoreScale.multiplier = maxPoints / (scoreScale.values.max - scoreScale.values.min);
+			break;
+		}
+
+		case 'version': {
+			for (temporarySemantic of ['major', 'minor', 'patch']) {
+				if (scoreScale[temporarySemantic]?.max !== scoreScale[temporarySemantic]?.min) {
+					semantic = temporarySemantic;
+					break;
 				}
-
-				scoreScale.semantic = semantic;
-				scoreScale.multiplier = maxPoints / (scoreScale[semantic].max - scoreScale[semantic].min);
-				break;
 			}
 
-			default: {
-				scoreScale.multiplier = maxPoints;
-			}
+			scoreScale.semantic = semantic;
+			scoreScale.multiplier = maxPoints / (scoreScale[semantic].max - scoreScale[semantic].min);
+			break;
+		}
+
+		default: {
+			scoreScale.multiplier = maxPoints;
 		}
 	}
 }
