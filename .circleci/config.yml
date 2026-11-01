@@ -386,6 +386,10 @@ workflows:
           context: default
           requires:
             - release
+          filters:
+            branches:
+              ignore:
+                - /^dependabot.*/ # skip dependanbot
       - deploy-docker-compose:
           context: default
           matrix:
