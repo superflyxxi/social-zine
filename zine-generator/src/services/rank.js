@@ -56,11 +56,11 @@ function scoreBoolean(value, rankRule, rankScale) {
 function scoreVersion(value, rankRule, rankScale) {
 	const version = getVersionObject(value);
 	const {semantic} = rankScale;
-	if (version[semantic] && rankRule.scoreMethod === 'PREFER_HIGH') {
+	if (Object.hasOwn(version, semantic) && rankRule.scoreMethod === 'PREFER_HIGH') {
 		return (version[semantic] - rankScale[semantic].min) * rankScale.multiplier;
 	}
 
-	return version[semantic] && rankRule.scoreMethod === 'PREFER_LOW'
+	return Object.hasOwn(version, semantic) && rankRule.scoreMethod === 'PREFER_LOW'
 		? (rankScale[semantic].max - version[semantic]) * rankScale.multiplier
 		: 0;
 }
@@ -79,7 +79,7 @@ async function getFinalScore(rankRules, rankScale, itemScore) {
 	for (const r in rankScale) {
 		const value = lodash.get(itemScore.item, r);
 		let score = 0;
-		if (rankRules[r]) {
+		if (Object.hasOwn(rankRules, r)) {
 			switch (rankRules[r].type) {
 				case 'number': {
 					score = scoreNumber(value, rankRules[r], rankScale[r]);
@@ -166,10 +166,10 @@ function initScoreScaleForRank(r, rankRule, itemScoreList) {
 			}
 		}
 
-		for (const item of Object.keys(mapValues)) {
-			result[item] = {};
-			result[item].max = Math.max(...mapValues[item]);
-			result[item].min = Math.min(...mapValues[item]);
+		for (const [k, v] of Object.entries(mapValues)) {
+			result[k] = {};
+			result[k].max = Math.max(...v);
+			result[k].min = Math.min(...v);
 		}
 	}
 
